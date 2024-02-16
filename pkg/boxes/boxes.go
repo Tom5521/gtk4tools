@@ -73,3 +73,17 @@ func NewAdaptativeGrid(size int, widgets ...gtk.Widgetter) *gtk.Grid {
 
 	return grid
 }
+
+type NotebookTab struct {
+	Label gtk.Widgetter
+	Child gtk.Widgetter
+}
+
+func NewNoteBook(tabs ...NotebookTab) *gtk.Notebook {
+	n := gtk.NewNotebook()
+	for _, t := range tabs {
+		n.AppendPage(t.Child, t.Label)
+	}
+
+	return n
+}
