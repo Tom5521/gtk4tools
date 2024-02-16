@@ -58,9 +58,11 @@ func NewAdaptativeGrid(size int, widgets ...gtk.Widgetter) *gtk.Grid {
 
 	var rowCount, columnCount int
 	for _, w := range widgets {
-		isHided := w.ObjectProperty("visible")
-		if !isHided.(bool) {
-			continue
+		visible, ok := w.ObjectProperty("visible").(bool)
+		if ok {
+			if !visible {
+				continue
+			}
 		}
 		grid.Attach(w, columnCount, rowCount, 1, 1)
 		if columnCount >= size {
