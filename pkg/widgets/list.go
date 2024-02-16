@@ -1,110 +1,52 @@
 package widgets
 
-import (
-	"fmt"
-	"slices"
-	"sync"
-	"time"
-
-	"github.com/diamondburned/gotk4/pkg/gtk/v4"
-)
+import "github.com/diamondburned/gotk4/pkg/gtk/v4"
 
 type List struct {
-	*gtk.ListBox
-	Items     []string
-	RowWidget func(int, string) gtk.Widgetter
+	*gtk.ListView
 
-	// default: 50 miliseconds
-	UpdaterSleepTime time.Duration
-
-	// Channels
-
-	killUpdater bool
-
-	clean   sync.Mutex
-	refresh sync.Mutex
-
-	// Preferences
-
-	PrintWarnings bool
+	SelectionModel gtk.SelectionModeller
+	Model          *gtk.StringList
+	Factory        *gtk.SignalListItemFactory
 }
 
-func NewList(items []string, rowWidget func(index int, item string) gtk.Widgetter) *List {
+func NewList(items []string, smodel gtk.SelectionModeller, setup, bind func(listitem *gtk.ListItem)) *List {
 	l := &List{
-		ListBox:          gtk.NewListBox(),
-		Items:            items,
-		RowWidget:        rowWidget,
-		UpdaterSleepTime: 50 * time.Millisecond,
+		SelectionModel: smodel,
+		Model:          gtk.NewStringList(items),
+		Factory:        gtk.NewSignalListItemFactory(),
 	}
-	l.InitAutoUpdater()
+	l.Factory.ConnectSetup(setup)
+	l.Factory.ConnectBind(bind)
+
 	return l
 }
 
-func (l *List) CleanUp() {
-	l.KillAutoUpdater()
+func (l *List) SetItems(items []string) {
+	l.Model.Splice(0, l.Model.NItems(), items)
 }
 
-func (l *List) Refresh() {
-	l.refresh.Lock()
-	defer l.refresh.Unlock()
-	l.cleanWidgetRows()
-	for index, item := range l.Items {
-		row := gtk.NewListBoxRow()
-		w := l.RowWidget(index, item)
-		row.SetChild(w)
-		l.Append(row)
+func (l *List) Remove(index uint) {
+	l.Model.Remove(index)
+}
+
+func (l *List) Append(item string) {
+	l.Model.Append(item)
+}
+
+func (l *List) Splice(pos, nRemovals uint, additions []string) {
+	l.Model.Splice(pos, nRemovals, additions)
+}
+
+func (l *List) ConnectSelected(f func(index uint)) {
+	type selecter interface {
+		gtk.SelectionModeller
+		Selected() uint
 	}
-}
-
-func (l *List) RemoveItem(index int) {
-	if !(index >= 0 && index < len(l.Items)) {
-		l.printWarn("The index does not exist")
+	model, ok := l.SelectionModel.(selecter)
+	if !ok {
 		return
 	}
-	l.Items = slices.Delete(l.Items, index, index+1)
-	l.Refresh()
-}
 
-func (l *List) InitAutoUpdater() {
-	l.killUpdater = false
-	l.Refresh()
-	go func() {
-		for {
-			switch l.killUpdater {
-			case true:
-				return
-			default:
-				oldItems := make([]string, len(l.Items))
-				copy(oldItems, l.Items)
-				time.Sleep(l.UpdaterSleepTime)
-				if !slices.Equal(l.Items, oldItems) {
-					l.Refresh()
-				}
-			}
-		}
-	}()
-}
-
-func (l *List) KillAutoUpdater() {
-	l.killUpdater = true
-}
-
-func (l *List) cleanWidgetRows() {
-	l.clean.Lock()
-	defer l.clean.Unlock()
-	for {
-		row := l.RowAtIndex(0)
-		if row == nil {
-			break
-		}
-		l.Remove(row)
-	}
-}
-
-// Prints warnings if PrintWarnings is true.
-func (l *List) printWarn(warn ...any) {
-	if l.PrintWarnings {
-		fmt.Print("WARNING: ")
-		fmt.Println(warn...)
-	}
+	f(model.Selected())
 }
