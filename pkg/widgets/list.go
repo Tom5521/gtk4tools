@@ -22,8 +22,8 @@ func NewList(items []string, smodel gtk.SelectionModeller, setup, bind func(list
 	return l
 }
 
-func (l *List) SetItems(items []string) {
-	l.Model.Splice(0, l.Model.NItems(), items)
+func (l *List) SetItems(items ...string) {
+	l.Splice(0, l.Model.NItems(), items...)
 }
 
 func (l *List) Remove(index uint) {
@@ -34,7 +34,7 @@ func (l *List) Append(item string) {
 	l.Model.Append(item)
 }
 
-func (l *List) Splice(pos, nRemovals uint, additions []string) {
+func (l *List) Splice(pos, nRemovals uint, additions ...string) {
 	l.Model.Splice(pos, nRemovals, additions)
 }
 
