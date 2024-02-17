@@ -6,25 +6,45 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
+type SelectionMode int
+
+const (
+	SelectionSingle SelectionMode = iota
+	SelectionNone
+	SelectionMultiple
+)
+
 type List struct {
 	*gtk.ListView
 
 	Items []string
 
 	SelectionModel gtk.SelectionModeller
+	SelectionMode  SelectionMode
 	Model          *gtk.StringList
 	Factory        *gtk.SignalListItemFactory
 }
 
-func NewList(items []string, smodel gtk.SelectionModeller, setup, bind func(listitem *gtk.ListItem)) *List {
+func NewList(items []string, smodel SelectionMode, setup, bind func(listitem *gtk.ListItem)) *List {
 	l := &List{
-		Items:          items,
-		SelectionModel: smodel,
-		Model:          gtk.NewStringList(items),
-		Factory:        gtk.NewSignalListItemFactory(),
+		Items:         items,
+		SelectionMode: smodel,
+		Model:         gtk.NewStringList(items),
+		Factory:       gtk.NewSignalListItemFactory(),
 	}
 	l.Factory.ConnectSetup(setup)
 	l.Factory.ConnectBind(bind)
+
+	switch smodel {
+	case SelectionNone:
+		l.SelectionModel = gtk.NewNoSelection(l.Model)
+	case SelectionSingle:
+		l.SelectionModel = gtk.NewSingleSelection(l.Model)
+	case SelectionMultiple:
+		l.SelectionModel = gtk.NewMultiSelection(l.Model)
+	}
+
+	l.ListView = gtk.NewListView(l.SelectionModel, &l.Factory.ListItemFactory)
 
 	return l
 }
