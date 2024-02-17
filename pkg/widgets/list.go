@@ -19,10 +19,10 @@ type List struct {
 
 	Items []string
 
-	SelectionModel gtk.SelectionModeller
-	SelectionMode  SelectionMode
-	Model          *gtk.StringList
-	Factory        *gtk.SignalListItemFactory
+	SelectionModeller gtk.SelectionModeller
+	SelectionMode     SelectionMode
+	Model             *gtk.StringList
+	Factory           *gtk.SignalListItemFactory
 }
 
 func NewList(items []string, smodel SelectionMode, setup, bind func(listitem *gtk.ListItem)) *List {
@@ -35,21 +35,27 @@ func NewList(items []string, smodel SelectionMode, setup, bind func(listitem *gt
 	l.Factory.ConnectSetup(setup)
 	l.Factory.ConnectBind(bind)
 
-	switch smodel {
-	case SelectionNone:
-		l.SelectionModel = gtk.NewNoSelection(l.Model)
-	case SelectionSingle:
-		l.SelectionModel = gtk.NewSingleSelection(l.Model)
-	case SelectionMultiple:
-		l.SelectionModel = gtk.NewMultiSelection(l.Model)
-	}
+	l.SetSelectionModeller(smodel)
 
-	l.ListView = gtk.NewListView(l.SelectionModel, &l.Factory.ListItemFactory)
+	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
 
 	return l
 }
 
-func (l *List) SetItems(items ...string) {
+func (l *List) SetSelectionModeller(mode SelectionMode) {
+	switch mode {
+	case SelectionNone:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model)
+	case SelectionSingle:
+		l.SelectionModeller = gtk.NewSingleSelection(l.Model)
+	case SelectionMultiple:
+		l.SelectionModeller = gtk.NewMultiSelection(l.Model)
+	default:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model)
+	}
+}
+
+func (l *List) SetItems(items []string) {
 	l.Splice(0, l.Model.NItems(), items...)
 }
 
@@ -74,7 +80,7 @@ func (l *List) ConnectSelected(f func(index uint)) {
 		gtk.SelectionModeller
 		Selected() uint
 	}
-	model, ok := l.SelectionModel.(selecter)
+	model, ok := l.SelectionModeller.(selecter)
 	if !ok {
 		return
 	}
