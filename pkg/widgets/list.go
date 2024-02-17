@@ -7,12 +7,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type selecter interface {
-	gtk.SelectionModeller
-	Selected() uint
-	Item(uint) *glib.Object
-}
-
 type SelectionMode int
 
 const (
@@ -111,4 +105,10 @@ func (l *List) RefreshItems() {
 	for i := range l.Model.NItems() {
 		l.Items = append(l.Items, l.Model.Item(i).Cast().(*gtk.StringObject).String())
 	}
+}
+
+type selecter interface {
+	gtk.SelectionModeller
+	Selected() uint
+	Item(uint) *glib.Object
 }
