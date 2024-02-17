@@ -2,8 +2,10 @@ package boxes
 
 import "github.com/diamondburned/gotk4/pkg/gtk/v4"
 
+var DefaultSpacing = 6
+
 func NewVbox(widgets ...gtk.Widgetter) *gtk.Box {
-	vbox := gtk.NewBox(gtk.OrientationVertical, 6)
+	vbox := gtk.NewBox(gtk.OrientationVertical, DefaultSpacing)
 	for _, w := range widgets {
 		vbox.Append(w)
 	}
@@ -12,25 +14,11 @@ func NewVbox(widgets ...gtk.Widgetter) *gtk.Box {
 }
 
 func NewHbox(widgets ...gtk.Widgetter) *gtk.Box {
-	hbox := gtk.NewBox(gtk.OrientationHorizontal, 6)
+	hbox := gtk.NewBox(gtk.OrientationHorizontal, DefaultSpacing)
 	for _, w := range widgets {
 		hbox.Append(w)
 	}
 	return hbox
-}
-
-func NewScrolledVbox(widgets ...gtk.Widgetter) *gtk.ScrolledWindow {
-	vbox := NewVbox(widgets...)
-	sbox := gtk.NewScrolledWindow()
-	sbox.SetChild(vbox)
-	return sbox
-}
-
-func NewScrolledHbox(widgets ...gtk.Widgetter) *gtk.ScrolledWindow {
-	hbox := NewHbox(widgets...)
-	sbox := gtk.NewScrolledWindow()
-	sbox.SetChild(hbox)
-	return sbox
 }
 
 func NewVPaned(top, bottom gtk.Widgetter) *gtk.Paned {

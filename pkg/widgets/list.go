@@ -3,8 +3,15 @@ package widgets
 import (
 	"slices"
 
+	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
+
+type selecter interface {
+	gtk.SelectionModeller
+	Selected() uint
+	Item(uint) *glib.Object
+}
 
 type SelectionMode int
 
@@ -56,12 +63,15 @@ func (l *List) SetSelectionModeller(mode SelectionMode) {
 }
 
 func (l *List) SetItems(items []string) {
-	l.Splice(0, l.Model.NItems(), items...)
+	l.Splice(0, int(l.Model.NItems()), items...)
 }
 
-func (l *List) Remove(index uint) {
-	l.Items = slices.Delete(l.Items, int(index), int(index+1))
-	l.Model.Remove(index)
+func (l *List) Remove(index int) {
+	if index <= -1 {
+		return
+	}
+	l.Items = slices.Delete(l.Items, index, index+1)
+	l.Model.Remove(uint(index))
 }
 
 func (l *List) Append(item string) {
@@ -69,23 +79,29 @@ func (l *List) Append(item string) {
 	l.Model.Append(item)
 }
 
-func (l *List) Splice(pos, nRemovals uint, additions ...string) {
-	l.Items = slices.Delete(l.Items, int(pos), int(nRemovals))
-	l.Items = append(l.Items, additions...)
-	l.Model.Splice(pos, nRemovals, additions)
-}
-
-func (l *List) ConnectSelected(f func(index uint)) {
-	type selecter interface {
-		gtk.SelectionModeller
-		Selected() uint
-	}
-	model, ok := l.SelectionModeller.(selecter)
-	if !ok {
+func (l *List) Splice(pos, nRemovals int, additions ...string) {
+	if pos <= -1 || nRemovals <= -1 {
 		return
 	}
+	l.Items = slices.Delete(l.Items, pos, nRemovals)
+	l.Items = append(l.Items, additions...)
+	l.Model.Splice(uint(pos), uint(nRemovals), additions)
+}
 
-	model.ConnectSelectionChanged(func(_, _ uint) {
-		f(model.Selected())
+func (l *List) ConnectSelected(f func(index int)) {
+	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		f(l.Selected())
 	})
+}
+
+func (l *List) Selected() int {
+	model, ok := l.SelectionModeller.(selecter)
+	if !ok {
+		return -1
+	}
+	i := model.Selected()
+	if model.Item(i) == nil {
+		return -1
+	}
+	return int(i)
 }
