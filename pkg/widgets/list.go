@@ -9,8 +9,8 @@ import (
 type SelectionMode int
 
 const (
-	SelectionSingle SelectionMode = iota
-	SelectionNone
+	SelectionNone SelectionMode = iota
+	SelectionSingle
 	SelectionMultiple
 )
 
@@ -79,5 +79,7 @@ func (l *List) ConnectSelected(f func(index uint)) {
 		return
 	}
 
-	f(model.Selected())
+	model.ConnectSelectionChanged(func(_, _ uint) {
+		f(model.Selected())
+	})
 }
