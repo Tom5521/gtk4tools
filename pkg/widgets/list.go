@@ -105,3 +105,10 @@ func (l *List) Selected() int {
 	}
 	return int(i)
 }
+
+func (l *List) RefreshItems() {
+	l.Items = []string{}
+	for i := range l.Model.NItems() {
+		l.Items = append(l.Items, l.Model.Item(i).Cast().(*gtk.StringObject).String())
+	}
+}
