@@ -7,10 +7,10 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type SelectionMode int
+type ListSelectionMode int
 
 const (
-	SelectionNone SelectionMode = iota
+	SelectionNone ListSelectionMode = iota
 	SelectionSingle
 	SelectionMultiple
 )
@@ -21,12 +21,13 @@ type List struct {
 	Items []string
 
 	SelectionModeller gtk.SelectionModeller
-	SelectionMode     SelectionMode
+	SelectionMode     ListSelectionMode
 	Model             *gtk.StringList
 	Factory           *gtk.SignalListItemFactory
 }
 
-func NewList(items []string, smodel SelectionMode, setup, bind func(listitem *gtk.ListItem)) *List {
+// Creates a new list that keeps the self.Items[] updated with that of the UI.
+func NewList(items []string, smodel ListSelectionMode, setup, bind func(listitem *gtk.ListItem)) *List {
 	l := &List{
 		Items:         items,
 		SelectionMode: smodel,
@@ -43,7 +44,7 @@ func NewList(items []string, smodel SelectionMode, setup, bind func(listitem *gt
 	return l
 }
 
-func (l *List) SetSelectionModeller(mode SelectionMode) {
+func (l *List) SetSelectionModeller(mode ListSelectionMode) {
 	switch mode {
 	case SelectionNone:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model)
@@ -56,6 +57,7 @@ func (l *List) SetSelectionModeller(mode SelectionMode) {
 	}
 }
 
+// Re-generate the list with the items provided.
 func (l *List) SetItems(items []string) {
 	l.Splice(0, int(l.Model.NItems()), items...)
 }
@@ -88,6 +90,8 @@ func (l *List) ConnectSelected(f func(index int)) {
 	})
 }
 
+// Returns the index of the selected item,
+// or -1 if its index is null or the selection model does not allow it.
 func (l *List) Selected() int {
 	model, ok := l.SelectionModeller.(selecter)
 	if !ok {

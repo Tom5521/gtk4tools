@@ -2,7 +2,7 @@ run:
   # Timeout for analysis, e.g. 30s, 5m.
   # Default: 1m
   timeout: 60m
-  build-tags: [mage, AddPo]
+  build-tags: [mage, AddPo, example]
   allow-parallel-runners: true
 # This file contains only configs which differ from defaults.
 # All possible options can be found here https://github.com/golangci/golangci-lint/blob/master/.golangci.reference.yml

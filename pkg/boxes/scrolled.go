@@ -15,11 +15,13 @@ func (s *ScrolledBox) SetChild(child *gtk.Box) {
 	s.ScrolledWindow.SetChild(child)
 }
 
+// Set the orientation of the child.
 func (s *ScrolledBox) SetOrientation(orientation gtk.Orientation) {
 	s.Orientation = orientation
 	s.Child.SetOrientation(orientation)
 }
 
+// Creates a vertical box that is scrollable in the X and Y axes, the orientation is that of the child.
 func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
 	vbox := NewVbox(widgets...)
 	sbox := &ScrolledBox{
@@ -31,6 +33,7 @@ func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
 	return sbox
 }
 
+// Creates a horizontal box that is scrollable in the X and Y axes, the orientation is that of the child.
 func NewScrolledHbox(widgets ...gtk.Widgetter) *ScrolledBox {
 	hbox := NewHbox(widgets...)
 	sbox := &ScrolledBox{

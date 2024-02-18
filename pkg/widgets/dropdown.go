@@ -16,6 +16,8 @@ func NewDropDown(items []string) *DropDown {
 	return d
 }
 
-func (d *DropDown) ConnectSelected(f func()) {
-	d.ConnectAfter("notify::selected", f)
+func (d *DropDown) ConnectSelected(f func(selected uint)) {
+	d.ConnectAfter("notify::selected", func() {
+		f(d.Selected())
+	})
 }
