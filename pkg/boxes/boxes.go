@@ -31,7 +31,7 @@ func NewVPaned(top, bottom gtk.Widgetter) *gtk.Paned {
 	return paned
 }
 
-// Creates a *gtk.Paned with horizontal orientation
+// Creates a *gtk.Paned with horizontal orientation.
 func NewHPaned(left, right gtk.Widgetter) *gtk.Paned {
 	paned := gtk.NewPaned(gtk.OrientationHorizontal)
 	paned.SetStartChild(left)
@@ -39,7 +39,7 @@ func NewHPaned(left, right gtk.Widgetter) *gtk.Paned {
 	return paned
 }
 
-// Creates a new *gtk.Frame
+// Creates a new *gtk.Frame.
 func NewFrame(label string, child gtk.Widgetter) *gtk.Frame {
 	frame := gtk.NewFrame(label)
 	frame.SetChild(child)

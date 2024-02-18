@@ -2,6 +2,10 @@
 
 Basic abstractions and widgets for gotk4 library
 
+These abstractions are mainly intended to simplify certain methods and make them
+resemble the Fyne framework, which in my opinion are much more readable
+than certain default GTK4 methods.
+
 ## Usage/Examples
 
 You can use it in your project by importing it with
