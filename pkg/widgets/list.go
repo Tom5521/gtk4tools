@@ -3,7 +3,6 @@ package widgets
 import (
 	"slices"
 
-	"github.com/diamondburned/gotk4/pkg/glib/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -97,10 +96,16 @@ func (l *List) ConnectSelected(f func(index int)) {
 	})
 }
 
+func (l *List) ConnectMultipleSelected(f func(indexes []int)) {
+	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		f(l.MultipleSelected())
+	})
+}
+
 // Returns the index of the selected item,
 // or -1 if its index is null or the selection model does not allow it.
 func (l *List) Selected() int {
-	model, ok := l.SelectionModeller.(selecter)
+	model, ok := l.SelectionModeller.(*gtk.SingleSelection)
 	if !ok {
 		return -1
 	}
@@ -108,19 +113,70 @@ func (l *List) Selected() int {
 	if model.Item(i) == nil {
 		return -1
 	}
+
 	return int(i)
 }
 
-// This method only works when the SelectionModeller is a SingleSelection.
+// This method iterates over each element in the list and returns the selected ones.
+// It only does something if the ListModel is a MultipleSelection,
+// otherwise it simply returns an empty list.
+func (l *List) MultipleSelected() []int {
+	var out []int
+
+	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
+	if !ok {
+		return out
+	}
+	for i := range model.NItems() {
+		item := model.Item(i)
+		if item == nil {
+			continue
+		}
+		if model.IsSelected(i) {
+			out = append(out, int(i))
+		}
+	}
+
+	return out
+}
+
+// The SetSelected method behaves as expected when applied to a SingleSelection SelectionModel.
+// It selects the item at the specified index. However, when applied to a MultipleSelection,
+// it behaves differently. Instead of selecting only the item at the specified index,
+// it deselects all other items and selects only the one at that index.
 //
-// Otherwise, it simply does nothing, it is useful for when you are
-// going to change the selection model later on.
+// In the case of NoSelection, it simply does nothing.
 func (l *List) SetSelected(index int) {
-	model, ok := l.SelectionModeller.(selecter)
+	if index <= -1 {
+		return
+	}
+	switch v := l.SelectionModeller.(type) {
+	case *gtk.MultiSelection:
+		v.SelectItem(uint(index), true)
+	case *gtk.SingleSelection:
+		v.SetSelected(uint(index))
+	}
+}
+
+// This method only does something when the ListModel is of the MultiSelection type,
+// and it requires you to pass the indexes that it will select.
+// If any of the indexes cannot be converted to uint, it will simply iterate to the next element.
+// However, if any of the indexes are not in the list,
+// it will throw an error, i.e. it will crash.
+func (l *List) SetMultipleSelections(indexes ...int) {
+	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
 	if !ok {
 		return
 	}
-	model.SetSelected(uint(index))
+	for _, i := range indexes {
+		if i <= -1 {
+			continue
+		}
+		if model.IsSelected(uint(i)) {
+			continue
+		}
+		model.SelectItem(uint(i), false)
+	}
 }
 
 func (l *List) RefreshItems() {
@@ -132,11 +188,4 @@ func (l *List) RefreshItems() {
 		}
 		l.Items = append(l.Items, item.Cast().(*gtk.StringObject).String())
 	}
-}
-
-type selecter interface {
-	gtk.SelectionModeller
-	Selected() uint
-	Item(uint) *glib.Object
-	SetSelected(uint)
 }
