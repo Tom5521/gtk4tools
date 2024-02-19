@@ -2,7 +2,7 @@ module github.com/Tom5521/gt4tools
 
 go 1.22.0
 
-require github.com/diamondburned/gotk4/pkg v0.2.1
+require github.com/diamondburned/gotk4/pkg v0.2.2
 
 require (
 	github.com/KarpelesLab/weak v0.1.1 // indirect
