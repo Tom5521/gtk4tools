@@ -1,4 +1,4 @@
-module github.com/Tom5521/gt4tools
+module github.com/Tom5521/gtk4tools
 
 go 1.22.0
 

@@ -5,8 +5,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Tom5521/gt4tools/pkg/boxes"
-	t "github.com/Tom5521/gt4tools/pkg/tools"
+	"github.com/Tom5521/gtk4tools/pkg/boxes"
+	t "github.com/Tom5521/gtk4tools/pkg/tools"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
