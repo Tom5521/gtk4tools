@@ -37,14 +37,15 @@ func NewList(items []string, smodel ListSelectionMode, setup, bind func(listitem
 	l.Factory.ConnectSetup(setup)
 	l.Factory.ConnectBind(bind)
 
-	l.SetSelectionModeller(smodel)
+	l.makeSelectionModeller(smodel)
 
 	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
 
 	return l
 }
 
-func (l *List) SetSelectionModeller(mode ListSelectionMode) {
+func (l *List) makeSelectionModeller(mode ListSelectionMode) {
+	l.SelectionMode = mode
 	switch mode {
 	case SelectionNone:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model)
@@ -55,6 +56,11 @@ func (l *List) SetSelectionModeller(mode ListSelectionMode) {
 	default:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model)
 	}
+}
+
+func (l *List) SetSelectionModeller(mode ListSelectionMode) {
+	l.SelectionMode = mode
+	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
 }
 
@@ -105,6 +111,18 @@ func (l *List) Selected() int {
 	return int(i)
 }
 
+// This method only works when the SelectionModeller is a SingleSelection.
+//
+// Otherwise, it simply does nothing, it is useful for when you are
+// going to change the selection model later on.
+func (l *List) SetSelected(index int) {
+	model, ok := l.SelectionModeller.(selecter)
+	if !ok {
+		return
+	}
+	model.SetSelected(uint(index))
+}
+
 func (l *List) RefreshItems() {
 	l.Items = []string{}
 	for i := range l.Model.NItems() {
@@ -120,4 +138,5 @@ type selecter interface {
 	gtk.SelectionModeller
 	Selected() uint
 	Item(uint) *glib.Object
+	SetSelected(uint)
 }
