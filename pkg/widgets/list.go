@@ -55,6 +55,7 @@ func (l *List) SetSelectionModeller(mode ListSelectionMode) {
 	default:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model)
 	}
+	l.ListView.SetModel(l.SelectionModeller)
 }
 
 // Re-generate the list with the items provided.
@@ -107,7 +108,11 @@ func (l *List) Selected() int {
 func (l *List) RefreshItems() {
 	l.Items = []string{}
 	for i := range l.Model.NItems() {
-		l.Items = append(l.Items, l.Model.Item(i).Cast().(*gtk.StringObject).String())
+		item := l.Model.Item(i)
+		if item == nil {
+			continue
+		}
+		l.Items = append(l.Items, item.Cast().(*gtk.StringObject).String())
 	}
 }
 

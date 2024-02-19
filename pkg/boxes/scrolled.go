@@ -44,3 +44,13 @@ func NewScrolledHbox(widgets ...gtk.Widgetter) *ScrolledBox {
 	sbox.SetChild(hbox)
 	return sbox
 }
+
+func NewScrolled(child *gtk.Box) *ScrolledBox {
+	s := &ScrolledBox{
+		Child:       child,
+		Orientation: child.Orientation(),
+		Spacing:     child.Spacing(),
+	}
+
+	return s
+}
