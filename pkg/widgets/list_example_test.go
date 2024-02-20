@@ -22,9 +22,12 @@ func ExampleList() {
 	)
 
 	list.OnMultipleSelected = func(indexes []int) {
-		fmt.Println(indexes)
+		for _, i := range indexes {
+			fmt.Printf("|%s|", list.Items[i])
+		}
+		fmt.Println()
 	}
 	list.OnSelected = func(index int) {
-		fmt.Println(index)
+		fmt.Println(list.Items[index])
 	}
 }
