@@ -18,7 +18,7 @@ func main() {
 		activate(app)
 	})
 	if code := app.Run(os.Args); code > 0 {
-		os.Exit(0)
+		os.Exit(code)
 	}
 }
 
@@ -42,7 +42,7 @@ func activate(app *gtk.Application) {
 
 	items := func() []string {
 		var out []string
-		for i := range 100 {
+		for i := range 1000 {
 			out = append(out, strconv.Itoa(i))
 		}
 		return out
