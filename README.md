@@ -48,6 +48,12 @@ func activate(app *gtk.Application) {
 
 You can test it by running `go run -v example.go`
 
+## Documentation
+
+The documentation is [here](https://pkg.go.dev/github.com/Tom5521/gtk4tools)
+
+It took some time to appear in pkg.go.dev
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
