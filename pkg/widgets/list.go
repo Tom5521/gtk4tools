@@ -19,6 +19,9 @@ type List struct {
 
 	Items []string
 
+	OnSelected         func(index int)
+	OnMultipleSelected func(indexes []int)
+
 	SelectionModeller gtk.SelectionModeller
 	SelectionMode     ListSelectionMode
 	Model             *gtk.StringList
@@ -37,10 +40,26 @@ func NewList(items []string, smodel ListSelectionMode, setup, bind func(listitem
 	l.Factory.ConnectBind(bind)
 
 	l.makeSelectionModeller(smodel)
+	l.reConnectSelection()
 
 	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
 
 	return l
+}
+
+func (l *List) reConnectSelection() {
+	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		switch l.SelectionModeller.(type) {
+		case *gtk.SingleSelection:
+			if l.OnSelected != nil {
+				l.OnSelected(l.Selected())
+			}
+		case *gtk.MultiSelection:
+			if l.OnMultipleSelected != nil {
+				l.OnMultipleSelected(l.MultipleSelected())
+			}
+		}
+	})
 }
 
 func (l *List) makeSelectionModeller(mode ListSelectionMode) {
@@ -61,6 +80,7 @@ func (l *List) SetSelectionModeller(mode ListSelectionMode) {
 	l.SelectionMode = mode
 	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
+	l.reConnectSelection()
 }
 
 // Re-generate the list with the items provided.
@@ -88,18 +108,6 @@ func (l *List) Splice(pos, nRemovals int, additions ...string) {
 	l.Items = slices.Delete(l.Items, pos, nRemovals)
 	l.Items = append(l.Items, additions...)
 	l.Model.Splice(uint(pos), uint(nRemovals), additions)
-}
-
-func (l *List) ConnectSelected(f func(index int)) {
-	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
-		f(l.Selected())
-	})
-}
-
-func (l *List) ConnectMultipleSelected(f func(indexes []int)) {
-	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
-		f(l.MultipleSelected())
-	})
 }
 
 // Returns the index of the selected item,
