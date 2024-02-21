@@ -12,10 +12,7 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-var VV string
-
 func main() {
-	fmt.Println(VV)
 	app := gtk.NewApplication("com.test.window", gio.ApplicationFlagsNone)
 	app.ConnectActivate(func() {
 		activate(app)
