@@ -12,7 +12,10 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
+var VV string
+
 func main() {
+	fmt.Println(VV)
 	app := gtk.NewApplication("com.test.window", gio.ApplicationFlagsNone)
 	app.ConnectActivate(func() {
 		activate(app)
@@ -42,7 +45,7 @@ func activate(app *gtk.Application) {
 
 	items := func() []string {
 		var out []string
-		for i := range 1000 {
+		for i := range 100 {
 			out = append(out, strconv.Itoa(i))
 		}
 		return out
