@@ -47,40 +47,15 @@ func NewList(items []string, smodel ListSelectionMode, setup, bind func(listitem
 	return l
 }
 
-func (l *List) reConnectSelection() {
-	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
-		switch l.SelectionModeller.(type) {
-		case *gtk.SingleSelection:
-			if l.OnSelected != nil {
-				l.OnSelected(l.Selected())
-			}
-		case *gtk.MultiSelection:
-			if l.OnMultipleSelected != nil {
-				l.OnMultipleSelected(l.MultipleSelected())
-			}
-		}
-	})
-}
-
-func (l *List) makeSelectionModeller(mode ListSelectionMode) {
-	l.SelectionMode = mode
-	switch mode {
-	case SelectionNone:
-		l.SelectionModeller = gtk.NewNoSelection(l.Model)
-	case SelectionSingle:
-		l.SelectionModeller = gtk.NewSingleSelection(l.Model)
-	case SelectionMultiple:
-		l.SelectionModeller = gtk.NewMultiSelection(l.Model)
-	default:
-		l.SelectionModeller = gtk.NewNoSelection(l.Model)
-	}
-}
-
 func (l *List) SetSelectionModeller(mode ListSelectionMode) {
 	l.SelectionMode = mode
 	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
 	l.reConnectSelection()
+}
+
+func (l *List) RefreshSelectionModeller() {
+	l.SetSelectionModeller(l.SelectionMode)
 }
 
 // Re-generate the list with the items provided.
@@ -195,5 +170,36 @@ func (l *List) RefreshItems() {
 			continue
 		}
 		l.Items = append(l.Items, item.Cast().(*gtk.StringObject).String())
+	}
+}
+
+// Internal functions
+
+func (l *List) reConnectSelection() {
+	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		switch l.SelectionModeller.(type) {
+		case *gtk.SingleSelection:
+			if l.OnSelected != nil {
+				l.OnSelected(l.Selected())
+			}
+		case *gtk.MultiSelection:
+			if l.OnMultipleSelected != nil {
+				l.OnMultipleSelected(l.MultipleSelected())
+			}
+		}
+	})
+}
+
+func (l *List) makeSelectionModeller(mode ListSelectionMode) {
+	l.SelectionMode = mode
+	switch mode {
+	case SelectionNone:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model)
+	case SelectionSingle:
+		l.SelectionModeller = gtk.NewSingleSelection(l.Model)
+	case SelectionMultiple:
+		l.SelectionModeller = gtk.NewMultiSelection(l.Model)
+	default:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model)
 	}
 }
