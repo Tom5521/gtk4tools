@@ -12,7 +12,53 @@ You can use it in your project by importing it with
 
 `go get github.com/Tom5521/gtk4tools@latest`
 
-Example:
+This library is to simplify gtk4 and avoid declaring unwanted variables that
+take up possible names for more useful variables.
+
+Here is a Before/After of applying the library.
+
+### Before
+
+```go
+func activate(app *gtk.Application) {
+ w := gtk.NewApplicationWindow(app)
+ w.SetDefaultSize(500, 400)
+
+ var buttons []*gtk.Button
+ for i := range 30 {
+  buttons = append(buttons, gtk.NewButtonWithLabel("Button "+strconv.Itoa(i)))
+ }
+
+ var labels []gtk.Widgetter
+ for i := range 30 {
+  labels = append(labels, gtk.NewLabel("Label "+strconv.Itoa(i)))
+ }
+
+ buttonsBox := gtk.NewBox(gtk.OrientationVertical,4)
+ for _,b := range buttons{
+  buttonsBox.Append(b)
+ }
+ buttonSbox := gtk.NewScrolledWindow()
+ buttonSbox.SetChild(buttonsBox)
+
+ labelsBox := gtk.NewBox(gtk.OrientationVertical,4)
+ for _,l := range labels{
+  labelsBox.Append(l)
+ }
+ labelSbox := gtk.NewScrolledWindow()
+ labelSbox.SetChild(labelsBox)
+
+ vbox := gtk.NewBox(gtk.OrientationVertical,1)
+ vbox.SetHomogeneous(true)
+ vbox.Append(buttonSbox)
+ vbox.Append(labelSbox)
+
+ w.SetChild(vbox)
+ w.Show()
+}
+```
+
+### After
 
 ```go
 func activate(app *gtk.Application) {
