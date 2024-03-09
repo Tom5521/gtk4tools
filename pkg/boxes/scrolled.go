@@ -34,7 +34,7 @@ func NewScrolledCVbox(spacing int, widgets ...gtk.Widgetter) *ScrolledBox {
 
 // Creates a vertical box that is scrollable in the X and Y axes, the orientation is that of the child.
 func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
-	return NewScrolledCVbox(DefaultSpacing)
+	return NewScrolledCVbox(DefaultSpacing, widgets...)
 }
 
 func NewScrolledCHbox(spacing int, widgets ...gtk.Widgetter) *ScrolledBox {
