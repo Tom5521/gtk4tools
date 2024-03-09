@@ -1,2 +1,3 @@
 ign_*.go
 *_dev.go
+vendor
