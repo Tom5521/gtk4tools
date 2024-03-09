@@ -21,9 +21,8 @@ func (s *ScrolledBox) SetOrientation(orientation gtk.Orientation) {
 	s.Child.SetOrientation(orientation)
 }
 
-// Creates a vertical box that is scrollable in the X and Y axes, the orientation is that of the child.
-func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
-	vbox := NewVbox(widgets...)
+func NewScrolledCVbox(spacing int, widgets ...gtk.Widgetter) *ScrolledBox {
+	vbox := NewCVbox(spacing, widgets...)
 	sbox := &ScrolledBox{
 		Orientation:    vbox.Orientation(),
 		ScrolledWindow: gtk.NewScrolledWindow(),
@@ -33,9 +32,13 @@ func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
 	return sbox
 }
 
-// Creates a horizontal box that is scrollable in the X and Y axes, the orientation is that of the child.
-func NewScrolledHbox(widgets ...gtk.Widgetter) *ScrolledBox {
-	hbox := NewHbox(widgets...)
+// Creates a vertical box that is scrollable in the X and Y axes, the orientation is that of the child.
+func NewScrolledVbox(widgets ...gtk.Widgetter) *ScrolledBox {
+	return NewScrolledCVbox(DefaultSpacing)
+}
+
+func NewScrolledCHbox(spacing int, widgets ...gtk.Widgetter) *ScrolledBox {
+	hbox := NewCHbox(spacing, widgets...)
 	sbox := &ScrolledBox{
 		Orientation:    hbox.Orientation(),
 		ScrolledWindow: gtk.NewScrolledWindow(),
@@ -43,6 +46,11 @@ func NewScrolledHbox(widgets ...gtk.Widgetter) *ScrolledBox {
 
 	sbox.SetChild(hbox)
 	return sbox
+}
+
+// Creates a horizontal box that is scrollable in the X and Y axes, the orientation is that of the child.
+func NewScrolledHbox(widgets ...gtk.Widgetter) *ScrolledBox {
+	return NewScrolledCHbox(DefaultSpacing, widgets...)
 }
 
 func NewScrolled(child *gtk.Box) *ScrolledBox {
