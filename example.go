@@ -72,7 +72,7 @@ func activate(app *gtk.Application) {
 		fmt.Println(list.Items[index])
 	}
 
-	vbox := boxes.NewHbox(
+	vbox := boxes.NewCHbox(1,
 		boxes.NewScrolledVbox(
 			// Convert a slice of a specific type to a gtk.Widgetter slice.
 			t.ToWidgetter(buttons)...,
@@ -84,7 +84,6 @@ func activate(app *gtk.Application) {
 			list,
 		),
 	)
-	vbox.SetSpacing(1)
 	vbox.SetHomogeneous(true)
 
 	w.SetChild(vbox)

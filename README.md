@@ -29,7 +29,7 @@ func activate(app *gtk.Application) {
   labels = append(labels, gtk.NewLabel("Label "+strconv.Itoa(i)))
  }
 
- vbox := boxes.NewHbox(
+ vbox := boxes.NewCHbox(1,
   boxes.NewScrolledVbox(
    // Convert a slice of a specific type to a gtk.Widgetter slice.
    t.ToWidgetter(buttons)...,
@@ -38,7 +38,6 @@ func activate(app *gtk.Application) {
    labels...,
   ),
  )
- vbox.SetSpacing(1)
  vbox.SetHomogeneous(true)
 
  w.SetChild(vbox)
