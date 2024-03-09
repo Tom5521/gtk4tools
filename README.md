@@ -1,4 +1,4 @@
-# Gtk4Tools
+# GTK4Tools
 
 Basic abstractions and widgets for gotk4 library
 
