@@ -1,16 +1,17 @@
-package widgets
+package widgets_test
 
 import (
 	"fmt"
 
+	"github.com/Tom5521/gtk4tools/pkg/widgets"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
 func ExampleList() {
 	items := []string{"1", "2", "3"}
-	list := NewList(
+	list := widgets.NewList(
 		items,
-		SelectionMultiple,
+		widgets.SelectionMultiple,
 		func(listitem *gtk.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},

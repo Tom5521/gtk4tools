@@ -4,23 +4,32 @@ import "github.com/diamondburned/gotk4/pkg/gtk/v4"
 
 var DefaultSpacing = 4
 
-// Creates a new *gtk.Box with vertical orientation.
-func NewVbox(widgets ...gtk.Widgetter) *gtk.Box {
-	vbox := gtk.NewBox(gtk.OrientationVertical, DefaultSpacing)
+// It is exactly the same as NewVbox but in this case you specify the spacing when creating the widget.
+func NewCVbox(spacing int, widgets ...gtk.Widgetter) *gtk.Box {
+	vbox := gtk.NewBox(gtk.OrientationVertical, spacing)
 	for _, w := range widgets {
 		vbox.Append(w)
 	}
-
 	return vbox
 }
 
-// Creates a new *gtk.Box with horizontal orientation.
-func NewHbox(widgets ...gtk.Widgetter) *gtk.Box {
-	hbox := gtk.NewBox(gtk.OrientationHorizontal, DefaultSpacing)
+// Creates a new *gtk.Box with vertical orientation.
+func NewVbox(widgets ...gtk.Widgetter) *gtk.Box {
+	return NewCVbox(DefaultSpacing, widgets...)
+}
+
+// // It is exactly the same as NewHbox but in this case you specify the spacing when creating the widget.
+func NewCHbox(spacing int, widgets ...gtk.Widgetter) *gtk.Box {
+	hbox := gtk.NewBox(gtk.OrientationHorizontal, spacing)
 	for _, w := range widgets {
 		hbox.Append(w)
 	}
 	return hbox
+}
+
+// Creates a new *gtk.Box with horizontal orientation.
+func NewHbox(widgets ...gtk.Widgetter) *gtk.Box {
+	return NewCHbox(DefaultSpacing, widgets...)
 }
 
 // Creates a *gtk.Paned with vertical orientation.
@@ -78,7 +87,7 @@ type NotebookTab struct {
 }
 
 // Create a new notebook with the specified NotebookTabs.
-func NewNoteBook(tabs ...NotebookTab) *gtk.Notebook {
+func NewNoteBook(tabs ...*NotebookTab) *gtk.Notebook {
 	n := gtk.NewNotebook()
 	for _, t := range tabs {
 		n.AppendPage(t.Child, t.Label)

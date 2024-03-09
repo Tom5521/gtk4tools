@@ -12,3 +12,14 @@ func ToWidgetter[T gtk.Widgetter](items []T) []gtk.Widgetter {
 	}
 	return widgets
 }
+
+type Appender interface {
+	gtk.Widgetter
+	Append(gtk.Widgetter)
+}
+
+func Append(parent Appender, widgets ...gtk.Widgetter) {
+	for _, w := range widgets {
+		parent.Append(w)
+	}
+}
