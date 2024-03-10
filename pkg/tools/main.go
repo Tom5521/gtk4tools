@@ -13,6 +13,7 @@ func ToWidgetter[T gtk.Widgetter](items []T) []gtk.Widgetter {
 	return widgets
 }
 
+// It is simply an interface of a gtk.widgetter that has the append function.
 type Appender interface {
 	gtk.Widgetter
 	Append(gtk.Widgetter)
