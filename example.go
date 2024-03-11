@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
 	t "github.com/Tom5521/gtk4tools/pkg/tools"
@@ -53,13 +54,11 @@ func activate(app *gtk.Application) {
 		func(listitem *gtk.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem) {
+		func(listitem *gtk.ListItem, item string) {
 			label := listitem.Child().(*gtk.Label)
-			obj := listitem.Item().Cast().(*gtk.StringObject)
-			label.SetText(obj.String())
+			label.SetText(item)
 		},
 	)
-
 	list.SetVExpand(true)
 
 	list.OnMultipleSelected = func(indexes []int) {
@@ -85,6 +84,13 @@ func activate(app *gtk.Application) {
 		),
 	)
 	vbox.SetHomogeneous(true)
+
+	go func() {
+		for i := range 10 {
+			time.Sleep(time.Second)
+			list.Append("Hi" + strconv.Itoa(i))
+		}
+	}()
 
 	w.SetChild(vbox)
 	w.Show()

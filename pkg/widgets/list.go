@@ -29,15 +29,35 @@ type List struct {
 }
 
 // Creates a new list that keeps the self.Items[] updated with that of the UI.
-func NewList(items []string, smodel ListSelectionMode, setup, bind func(listitem *gtk.ListItem)) *List {
+func NewList(
+	items []string,
+	smodel ListSelectionMode,
+	setup func(listitem *gtk.ListItem),
+	bind func(listitem *gtk.ListItem, obj string),
+) *List {
 	l := &List{
 		Items:         items,
 		SelectionMode: smodel,
 		Model:         gtk.NewStringList(items),
 		Factory:       gtk.NewSignalListItemFactory(),
 	}
-	l.Factory.ConnectSetup(setup)
-	l.Factory.ConnectBind(bind)
+	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+		if setup == nil {
+			return
+		}
+		setup(listitem)
+	})
+	l.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+		if bind == nil {
+			return
+		}
+		var item string
+		obj, ok := listitem.Item().Cast().(*gtk.StringObject)
+		if ok {
+			item = obj.String()
+		}
+		bind(listitem, item)
+	})
 
 	l.makeSelectionModeller(smodel)
 	l.reConnectSelection()
