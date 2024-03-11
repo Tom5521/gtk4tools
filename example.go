@@ -75,7 +75,7 @@ func activate(app *gtk.Application) {
 	vbox := boxes.NewCHbox(1,
 		boxes.NewScrolledVbox(
 			// Convert a slice of a specific type to a gtk.Widgetter slice.
-			t.ToWidgetter(buttons...)...,
+			t.ToWidgetter(buttons)...,
 		),
 		boxes.NewScrolledVbox(
 			labels...,
