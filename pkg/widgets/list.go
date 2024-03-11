@@ -19,6 +19,9 @@ type List struct {
 
 	Items []string
 
+	Setup func(*gtk.ListItem)
+	Bind  func(*gtk.ListItem, string)
+
 	OnSelected         func(index int)
 	OnMultipleSelected func(indexes []int)
 
@@ -40,25 +43,11 @@ func NewList(
 		SelectionMode: smodel,
 		Model:         gtk.NewStringList(items),
 		Factory:       gtk.NewSignalListItemFactory(),
+		Setup:         setup,
+		Bind:          bind,
 	}
-	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
-		if setup == nil {
-			return
-		}
-		setup(listitem)
-	})
-	l.Factory.ConnectBind(func(listitem *gtk.ListItem) {
-		if bind == nil {
-			return
-		}
-		var item string
-		obj, ok := listitem.Item().Cast().(*gtk.StringObject)
-		if ok {
-			item = obj.String()
-		}
-		bind(listitem, item)
-	})
 
+	l.reConnectFactory()
 	l.makeSelectionModeller(smodel)
 	l.reConnectSelection()
 
@@ -193,7 +182,58 @@ func (l *List) RefreshItems() {
 	}
 }
 
+// Can be used when modifying List.Setup and/or List.Bind to redraw
+// the entire list following the new Setup and Bind.
+func (l *List) RefreshFactory() {
+	l.reConnectFactory()
+	l.RegenerateModel()
+}
+
+// Refreshes absolutely everything. To be more specific here is the list of what it refreshes:
+//
+// - Refreshes List.Items
+//
+// - Refreshes the selection mode
+//
+// - Refreshes the factory
+//
+// - Refreshes the model
+//
+// I generally discourage its use and prefer to refresh things as
+// they are modified manually and individually.
+func (l *List) Refresh() {
+	l.RefreshItems()
+	l.RefreshSelectionModeller()
+	l.reConnectFactory()
+	l.RegenerateModel()
+}
+
+func (l *List) RegenerateModel() {
+	l.cleanModel()
+	l.generateModel()
+}
+
 // Internal functions
+
+func (l *List) reConnectFactory() {
+	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+		if l.Setup == nil {
+			return
+		}
+		l.Setup(listitem)
+	})
+	l.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+		if l.Bind == nil {
+			return
+		}
+		var item string
+		obj, ok := listitem.Item().Cast().(*gtk.StringObject)
+		if ok {
+			item = obj.String()
+		}
+		l.Bind(listitem, item)
+	})
+}
 
 func (l *List) reConnectSelection() {
 	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
@@ -222,4 +262,18 @@ func (l *List) makeSelectionModeller(mode ListSelectionMode) {
 	default:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model)
 	}
+}
+
+func (l *List) cleanModel() {
+	if len(l.Items) == 0 {
+		return
+	}
+	l.Model.Splice(0, l.Model.NItems(), []string{})
+}
+
+func (l *List) generateModel() {
+	if len(l.Items) == 0 {
+		return
+	}
+	l.Model.Splice(0, 0, l.Items)
 }

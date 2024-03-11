@@ -15,10 +15,8 @@ func ExampleList() {
 		func(listitem *gtk.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem) {
-			label := listitem.Child().(*gtk.Label)
-			obj := listitem.Item().Cast().(*gtk.StringObject)
-			label.SetText(obj.String())
+		func(listitem *gtk.ListItem, obj string) {
+			listitem.Child().(*gtk.Label).SetText(obj)
 		},
 	)
 
@@ -31,4 +29,26 @@ func ExampleList() {
 	list.OnSelected = func(index int) {
 		fmt.Println(list.Items[index])
 	}
+}
+
+func ExampleList_RefreshFactory() {
+	items := []string{"1", "2", "3"}
+	list := widgets.NewList(
+		items,
+		widgets.SelectionMultiple,
+		func(listitem *gtk.ListItem) {
+			listitem.SetChild(gtk.NewLabel(""))
+		},
+		func(listitem *gtk.ListItem, obj string) {
+			listitem.Child().(*gtk.Label).SetText(obj)
+		},
+	)
+
+	list.Setup = func(li *gtk.ListItem) {
+		li.SetChild(gtk.NewText())
+	}
+	list.Bind = func(li *gtk.ListItem, s string) {
+		li.Child().(*gtk.Text).SetText(s)
+	}
+	list.RefreshFactory()
 }
