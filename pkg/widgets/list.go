@@ -155,6 +155,8 @@ func (l *List) SetSelected(index int) {
 // If any of the indexes cannot be converted to uint, it will simply iterate to the next element.
 // However, if any of the indexes are not in the list,
 // it will throw an error, i.e. it will crash.
+//
+// If an element is already selected, deselects it.
 func (l *List) SetMultipleSelections(indexes ...int) {
 	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
 	if !ok {
@@ -165,6 +167,7 @@ func (l *List) SetMultipleSelections(indexes ...int) {
 			continue
 		}
 		if model.IsSelected(uint(i)) {
+			model.UnselectItem(uint(i))
 			continue
 		}
 		model.SelectItem(uint(i), false)
