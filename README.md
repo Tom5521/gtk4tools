@@ -99,6 +99,9 @@ The documentation is [here](https://pkg.go.dev/github.com/Tom5521/gtk4tools)
 
 It took some time to appear in pkg.go.dev
 
+Note: it is better to clone the repository and use godoc on it,
+since pkg.go.dev takes a long time to index new versions.
+
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
