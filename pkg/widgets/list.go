@@ -35,8 +35,8 @@ type List struct {
 func NewList(
 	items []string,
 	smodel ListSelectionMode,
-	setup func(listitem *gtk.ListItem),
-	bind func(listitem *gtk.ListItem, obj string),
+	setup func(*gtk.ListItem),
+	bind func(*gtk.ListItem, string),
 ) *List {
 	l := &List{
 		Items:         items,
