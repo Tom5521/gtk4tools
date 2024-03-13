@@ -25,6 +25,9 @@ type List struct {
 	OnSelected         func(index int)
 	OnMultipleSelected func(indexes []int)
 
+	// Internal parts of the widget.
+	// They are publicly exposed to give more freedom to the programmer.
+
 	SelectionModeller gtk.SelectionModeller
 	SelectionMode     ListSelectionMode
 	Model             *gtk.StringList
