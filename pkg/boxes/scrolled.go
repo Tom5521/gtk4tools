@@ -15,6 +15,11 @@ func (s *ScrolledBox) SetChild(child *gtk.Box) {
 	s.ScrolledWindow.SetChild(child)
 }
 
+func (s *ScrolledBox) SetSpacing(spacing int) {
+	s.Child.SetSpacing(spacing)
+	s.Spacing = spacing
+}
+
 // Set the orientation of the child.
 func (s *ScrolledBox) SetOrientation(orientation gtk.Orientation) {
 	s.Orientation = orientation
