@@ -271,14 +271,14 @@ func (l *List) makeSelectionModeller(mode ListSelectionMode) {
 }
 
 func (l *List) cleanModel() {
-	if len(l.Items) <= 0 {
+	if len(l.Items) == 0 {
 		return
 	}
 	l.Model.Splice(0, l.Model.NItems(), []string{})
 }
 
 func (l *List) generateModel() {
-	if len(l.Items) <= 0 {
+	if len(l.Items) == 0 {
 		return
 	}
 	l.Model.Splice(0, 0, l.Items)
