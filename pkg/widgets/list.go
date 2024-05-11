@@ -6,6 +6,9 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
+type ListSetup func(*gtk.ListItem)
+type ListBind func(*gtk.ListItem, string)
+
 type ListSelectionMode int
 
 const (
@@ -19,8 +22,8 @@ type List struct {
 
 	Items []string
 
-	Setup func(*gtk.ListItem)
-	Bind  func(*gtk.ListItem, string)
+	Setup ListSetup
+	Bind  ListBind
 
 	OnSelected         func(index int)
 	OnMultipleSelected func(indexes []int)
@@ -38,8 +41,8 @@ type List struct {
 func NewList(
 	items []string,
 	smodel ListSelectionMode,
-	setup func(*gtk.ListItem),
-	bind func(*gtk.ListItem, string),
+	setup ListSetup,
+	bind ListBind,
 ) *List {
 	l := &List{
 		Items:         items,
