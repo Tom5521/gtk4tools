@@ -22,8 +22,7 @@ type AlternativeList struct {
 	OnSelected         func(index int)
 	OnMultipleSelected func(indexes []int)
 
-	ModelType gioutil.ListModelType[int]
-	Model     *gioutil.ListModel[int]
+	Model *gioutil.ListModel[int]
 
 	SelectionModeller gtk.SelectionModeller
 	SelectionMode     ListSelectionMode
@@ -37,7 +36,7 @@ func NewAlternativeList(
 	bind AlternativeListBind,
 ) *AlternativeList {
 	l := &AlternativeList{
-		ModelType:     gioutil.NewListModelType[int](),
+		Model:         gioutil.NewListModelType[int]().New(),
 		Factory:       gtk.NewSignalListItemFactory(),
 		SelectionMode: smodel,
 
@@ -47,8 +46,6 @@ func NewAlternativeList(
 	}
 
 	l.reConnectFactory()
-
-	l.Model = l.ModelType.New()
 	l.RefreshModel()
 	l.makeSelectionModeller(smodel)
 
