@@ -140,7 +140,7 @@ func (l *AlternativeList) SetSelectionModeller(mode ListSelectionMode) {
 	l.SelectionMode = mode
 	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
-	l.reConnectSelection()
+	l.ReConnectSelection()
 }
 
 func (l *AlternativeList) RefreshSelectionModeller() {
@@ -176,6 +176,21 @@ func (l *AlternativeList) RefreshModel() {
 	l.Model.Splice(0, l.Model.NItems(), make([]int, l.Len())...)
 }
 
+func (l *AlternativeList) ReConnectSelection() {
+	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		switch l.SelectionModeller.(type) {
+		case *gtk.SingleSelection:
+			if l.OnSelected != nil {
+				l.OnSelected(l.Selected())
+			}
+		case *gtk.MultiSelection:
+			if l.OnMultipleSelected != nil {
+				l.OnMultipleSelected(l.MultipleSelected())
+			}
+		}
+	})
+}
+
 // PRIVATE METHODS
 
 func (l *AlternativeList) makeSelectionModeller(mode ListSelectionMode) {
@@ -204,20 +219,5 @@ func (l *AlternativeList) reConnectFactory() {
 			return
 		}
 		l.Bind(listitem, int(listitem.Position()))
-	})
-}
-
-func (l *AlternativeList) reConnectSelection() {
-	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
-		switch l.SelectionModeller.(type) {
-		case *gtk.SingleSelection:
-			if l.OnSelected != nil {
-				l.OnSelected(l.Selected())
-			}
-		case *gtk.MultiSelection:
-			if l.OnMultipleSelected != nil {
-				l.OnMultipleSelected(l.MultipleSelected())
-			}
-		}
 	})
 }
