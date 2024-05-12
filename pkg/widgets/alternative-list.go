@@ -29,6 +29,9 @@ type AlternativeList struct {
 	Factory           *gtk.SignalListItemFactory
 }
 
+// It creates an alternative list, which is practically the same as fyne's,
+// that only requires the slice length to work. The only real difference is
+// that the list has to be refreshed manually with each modification of the base slice.
 func NewAlternativeList(
 	smodel ListSelectionMode,
 	lenfunc AlternativeListLen,
