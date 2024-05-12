@@ -1,108 +1,67 @@
 package widgets
 
 import (
-	"slices"
-
+	"github.com/diamondburned/gotk4/pkg/core/gioutil"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type ListSetup func(*gtk.ListItem)
-type ListBind func(*gtk.ListItem, string)
+// REFERENCE:
+// https://pkg.go.dev/github.com/diamondburned/gotk4/pkg/core/gioutil#ListModel
 
-type ListSelectionMode int
+type AlternativeListSetup func(listitem *gtk.ListItem)
+type AlternativeListBind func(listitem *gtk.ListItem, index int)
+type AlternativeListLen func() int
 
-const (
-	SelectionNone ListSelectionMode = iota
-	SelectionSingle
-	SelectionMultiple
-)
-
-type List struct {
+type AlternativeList struct {
 	*gtk.ListView
 
-	Items []string
-
-	Setup ListSetup
-	Bind  ListBind
+	Setup AlternativeListSetup
+	Bind  AlternativeListBind
+	Len   AlternativeListLen
 
 	OnSelected         func(index int)
 	OnMultipleSelected func(indexes []int)
 
-	// Internal parts of the widget.
-	// They are publicly exposed to give more freedom to the programmer.
+	ModelType gioutil.ListModelType[int]
+	Model     *gioutil.ListModel[int]
 
 	SelectionModeller gtk.SelectionModeller
 	SelectionMode     ListSelectionMode
-	Model             *gtk.StringList
 	Factory           *gtk.SignalListItemFactory
 }
 
-// Creates a new list that keeps the self.Items[] updated with that of the UI.
-func NewList(
-	items []string,
+func NewAlternativeList(
 	smodel ListSelectionMode,
-	setup ListSetup,
-	bind ListBind,
-) *List {
-	l := &List{
-		Items:         items,
-		SelectionMode: smodel,
-		Model:         gtk.NewStringList(items),
+	lenfunc AlternativeListLen,
+	setup AlternativeListSetup,
+	bind AlternativeListBind,
+) *AlternativeList {
+	l := &AlternativeList{
+		ModelType:     gioutil.NewListModelType[int](),
 		Factory:       gtk.NewSignalListItemFactory(),
-		Setup:         setup,
-		Bind:          bind,
+		SelectionMode: smodel,
+
+		Setup: setup,
+		Bind:  bind,
+		Len:   lenfunc,
 	}
 
 	l.reConnectFactory()
+
+	l.Model = l.ModelType.New()
+	l.RefreshModel()
 	l.makeSelectionModeller(smodel)
-	l.reConnectSelection()
 
 	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
 
 	return l
 }
 
-func (l *List) SetSelectionModeller(mode ListSelectionMode) {
-	l.SelectionMode = mode
-	l.makeSelectionModeller(mode)
-	l.ListView.SetModel(l.SelectionModeller)
-	l.reConnectSelection()
-}
-
-func (l *List) RefreshSelectionModeller() {
-	l.SetSelectionModeller(l.SelectionMode)
-}
-
-// Re-generate the list with the items provided.
-func (l *List) SetItems(items []string) {
-	l.Splice(0, int(l.Model.NItems()), items...)
-}
-
-func (l *List) Remove(index int) {
-	if index <= -1 {
-		return
-	}
-	l.Items = slices.Delete(l.Items, index, index+1)
-	l.Model.Remove(uint(index))
-}
-
-func (l *List) Append(item string) {
-	l.Items = append(l.Items, item)
-	l.Model.Append(item)
-}
-
-func (l *List) Splice(pos, nRemovals int, additions ...string) {
-	if pos <= -1 || nRemovals <= -1 {
-		return
-	}
-	l.Items = slices.Delete(l.Items, pos, nRemovals)
-	l.Items = append(l.Items, additions...)
-	l.Model.Splice(uint(pos), uint(nRemovals), additions)
-}
+// PUBLIC METHODS
 
 // Returns the index of the selected item,
 // or -1 if its index is null or the selection model does not allow it.
-func (l *List) Selected() int {
+func (l *AlternativeList) Selected() int {
 	model, ok := l.SelectionModeller.(*gtk.SingleSelection)
 	if !ok {
 		return -1
@@ -118,7 +77,7 @@ func (l *List) Selected() int {
 // This method iterates over each element in the list and returns the selected ones.
 // It only does something if the ListModel is a MultipleSelection,
 // otherwise it simply returns an empty list.
-func (l *List) MultipleSelected() []int {
+func (l *AlternativeList) MultipleSelected() []int {
 	var out []int
 
 	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
@@ -144,7 +103,7 @@ func (l *List) MultipleSelected() []int {
 // it deselects all other items and selects only the one at that index.
 //
 // In the case of NoSelection, it simply does nothing.
-func (l *List) SetSelected(index int) {
+func (l *AlternativeList) SetSelected(index int) {
 	if index <= -1 {
 		return
 	}
@@ -163,7 +122,7 @@ func (l *List) SetSelected(index int) {
 // it will throw an error, i.e. it will crash.
 //
 // If an element is already selected, deselects it.
-func (l *List) SetMultipleSelections(indexes ...int) {
+func (l *AlternativeList) SetMultipleSelections(indexes ...int) {
 	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
 	if !ok {
 		return
@@ -180,22 +139,22 @@ func (l *List) SetMultipleSelections(indexes ...int) {
 	}
 }
 
-func (l *List) RefreshItems() {
-	l.Items = []string{}
-	for i := range l.Model.NItems() {
-		item := l.Model.Item(i)
-		if item == nil {
-			continue
-		}
-		l.Items = append(l.Items, item.Cast().(*gtk.StringObject).String())
-	}
+func (l *AlternativeList) SetSelectionModeller(mode ListSelectionMode) {
+	l.SelectionMode = mode
+	l.makeSelectionModeller(mode)
+	l.ListView.SetModel(l.SelectionModeller)
+	l.reConnectSelection()
+}
+
+func (l *AlternativeList) RefreshSelectionModeller() {
+	l.SetSelectionModeller(l.SelectionMode)
 }
 
 // Can be used when modifying List.Setup and/or List.Bind to redraw
 // the entire list following the new Setup and Bind.
-func (l *List) RefreshFactory() {
+func (l *AlternativeList) RefreshFactory() {
 	l.reConnectFactory()
-	l.RegenerateModel()
+	l.RefreshModel()
 }
 
 // Refreshes absolutely everything. To be more specific here is the list of what it refreshes:
@@ -210,21 +169,33 @@ func (l *List) RefreshFactory() {
 //
 // I generally discourage its use and prefer to refresh things as
 // they are modified manually and individually.
-func (l *List) Refresh() {
-	l.RefreshItems()
+func (l *AlternativeList) Refresh() {
 	l.RefreshSelectionModeller()
 	l.reConnectFactory()
-	l.RegenerateModel()
+	l.RefreshModel()
 }
 
-func (l *List) RegenerateModel() {
-	l.cleanModel()
-	l.generateModel()
+func (l *AlternativeList) RefreshModel() {
+	l.Model.Splice(0, l.Model.NItems(), make([]int, l.Len())...)
 }
 
-// Internal functions
+// PRIVATE METHODS
 
-func (l *List) reConnectFactory() {
+func (l *AlternativeList) makeSelectionModeller(mode ListSelectionMode) {
+	l.SelectionMode = mode
+	switch mode {
+	case SelectionNone:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model.ListModel)
+	case SelectionSingle:
+		l.SelectionModeller = gtk.NewSingleSelection(l.Model.ListModel)
+	case SelectionMultiple:
+		l.SelectionModeller = gtk.NewMultiSelection(l.Model.ListModel)
+	default:
+		l.SelectionModeller = gtk.NewNoSelection(l.Model.ListModel)
+	}
+}
+
+func (l *AlternativeList) reConnectFactory() {
 	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
 		if l.Setup == nil {
 			return
@@ -235,16 +206,11 @@ func (l *List) reConnectFactory() {
 		if l.Bind == nil {
 			return
 		}
-		var item string
-		obj, ok := listitem.Item().Cast().(*gtk.StringObject)
-		if ok {
-			item = obj.String()
-		}
-		l.Bind(listitem, item)
+		l.Bind(listitem, int(listitem.Position()))
 	})
 }
 
-func (l *List) reConnectSelection() {
+func (l *AlternativeList) reConnectSelection() {
 	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
 		switch l.SelectionModeller.(type) {
 		case *gtk.SingleSelection:
@@ -257,32 +223,4 @@ func (l *List) reConnectSelection() {
 			}
 		}
 	})
-}
-
-func (l *List) makeSelectionModeller(mode ListSelectionMode) {
-	l.SelectionMode = mode
-	switch mode {
-	case SelectionNone:
-		l.SelectionModeller = gtk.NewNoSelection(l.Model)
-	case SelectionSingle:
-		l.SelectionModeller = gtk.NewSingleSelection(l.Model)
-	case SelectionMultiple:
-		l.SelectionModeller = gtk.NewMultiSelection(l.Model)
-	default:
-		l.SelectionModeller = gtk.NewNoSelection(l.Model)
-	}
-}
-
-func (l *List) cleanModel() {
-	if len(l.Items) == 0 || l.Model.NItems() == 0 {
-		return
-	}
-	l.Model.Splice(0, l.Model.NItems(), []string{})
-}
-
-func (l *List) generateModel() {
-	if len(l.Items) == 0 {
-		return
-	}
-	l.Model.Splice(0, 0, l.Items)
 }

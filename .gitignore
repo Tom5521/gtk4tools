@@ -1,3 +1,4 @@
 ign_*.go
 *_dev.go
 vendor
+*__ignore__*
