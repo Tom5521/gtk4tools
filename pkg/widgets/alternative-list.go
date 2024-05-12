@@ -39,7 +39,7 @@ func NewAlternativeList(
 	bind AlternativeListBind,
 ) *AlternativeList {
 	l := &AlternativeList{
-		Model:         gioutil.NewListModelType[int]().New(),
+		Model:         gioutil.NewListModel[int](),
 		Factory:       gtk.NewSignalListItemFactory(),
 		SelectionMode: smodel,
 
