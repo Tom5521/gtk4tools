@@ -48,6 +48,7 @@ func NewAlternativeList(
 	l.reConnectFactory()
 	l.RefreshModel()
 	l.makeSelectionModeller(smodel)
+	l.reConnectSelection()
 
 	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
 
@@ -140,7 +141,7 @@ func (l *AlternativeList) SetSelectionModeller(mode ListSelectionMode) {
 	l.SelectionMode = mode
 	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
-	l.ReConnectSelection()
+	l.reConnectSelection()
 }
 
 func (l *AlternativeList) RefreshSelectionModeller() {
@@ -176,7 +177,7 @@ func (l *AlternativeList) RefreshModel() {
 	l.Model.Splice(0, l.Model.NItems(), make([]int, l.Len())...)
 }
 
-func (l *AlternativeList) ReConnectSelection() {
+func (l *AlternativeList) reConnectSelection() {
 	l.SelectionModeller.ConnectSelectionChanged(func(_, _ uint) {
 		switch l.SelectionModeller.(type) {
 		case *gtk.SingleSelection:
