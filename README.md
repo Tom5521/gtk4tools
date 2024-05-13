@@ -20,78 +20,104 @@ Here is a Before/After of applying the library.
 ### Before
 
 ```go
+type Person struct {
+	Name string
+	Age  uint
+}
+
 func activate(app *gtk.Application) {
- w := gtk.NewApplicationWindow(app)
- w.SetDefaultSize(500, 400)
+	w := gtk.NewApplicationWindow(app)
 
- var buttons []*gtk.Button
- for i := range 30 {
-  buttons = append(buttons, gtk.NewButtonWithLabel("Button "+strconv.Itoa(i)))
- }
+	items := []Person{
+		Person{
+			Name: "Jonh Doe 1",
+			Age:  21,
+		},
+		Person{
+			Name: "Carlos Gimenez",
+			Age:  26,
+		},
+		Person{
+			Name: "Caroline Simpson",
+			Age:  20,
+		},
+	}
 
- var labels []gtk.Widgetter
- for i := range 30 {
-  labels = append(labels, gtk.NewLabel("Label "+strconv.Itoa(i)))
- }
+	var personNames []string
+	for _, p := range items {
+		personNames = append(personNames, p.Name)
+	}
 
- buttonsBox := gtk.NewBox(gtk.OrientationVertical,4)
- for _,b := range buttons{
-  buttonsBox.Append(b)
- }
- buttonSbox := gtk.NewScrolledWindow()
- buttonSbox.SetChild(buttonsBox)
+	model := gtk.NewStringList(personNames)
+	selectionModel := gtk.NewSingleSelection(model)
+	selectionModel.ConnectSelectionChanged(func(_, _ uint) {
+		fmt.Println("Index: ", selectionModel.Selected())
+		fmt.Println("Value: ", personNames[selectionModel.Selected()])
+	})
 
- labelsBox := gtk.NewBox(gtk.OrientationVertical,4)
- for _,l := range labels{
-  labelsBox.Append(l)
- }
- labelSbox := gtk.NewScrolledWindow()
- labelSbox.SetChild(labelsBox)
+	factory := gtk.NewSignalListItemFactory()
+	factory.ConnectSetup(func(listitem *gtk.ListItem) {
+		listitem.SetChild(gtk.NewLabel(""))
+	})
+	factory.ConnectBind(func(listitem *gtk.ListItem) {
+		obj := listitem.Item().Cast().(*gtk.StringObject)
+		listitem.Child().(*gtk.Label).SetText(obj.String())
+	})
 
- vbox := gtk.NewBox(gtk.OrientationVertical,1)
- vbox.SetHomogeneous(true)
- vbox.Append(buttonSbox)
- vbox.Append(labelSbox)
+	list := gtk.NewListView(selectionModel, &factory.ListItemFactory)
 
- w.SetChild(vbox)
- w.Show()
+	w.SetChild(list)
+	w.Show()
 }
 ```
 
 ### After
 
 ```go
+type Person struct {
+	Name string
+	Age  uint
+}
+
 func activate(app *gtk.Application) {
- w := gtk.NewApplicationWindow(app)
- w.SetDefaultSize(500, 400)
+	w := gtk.NewApplicationWindow(app)
 
- var buttons []*gtk.Button
- for i := range 30 {
-  buttons = append(buttons, gtk.NewButtonWithLabel("Button "+strconv.Itoa(i)))
- }
+	items := []Person{
+		Person{
+			Name: "Jonh Doe 1",
+			Age:  21,
+		},
+		Person{
+			Name: "Carlos Gimenez",
+			Age:  26,
+		},
+		Person{
+			Name: "Caroline Simpson",
+			Age:  20,
+		},
+	}
 
- var labels []gtk.Widgetter
- for i := range 30 {
-  labels = append(labels, gtk.NewLabel("Label "+strconv.Itoa(i)))
- }
+	list := widgets.NewList[Person](
+		items,
+		widgets.SelectionSingle,
+		func(li *gtk.ListItem) {
+			li.SetChild(gtk.NewLabel(""))
+		},
+		func(li *gtk.ListItem, p Person) {
+			li.Child().(*gtk.Label).SetText(p.Name)
+		},
+	)
+	list.OnSelected = func(index int) {
+		fmt.Println("Index: ", index)
+		fmt.Println("Value: ", items[index])
+	}
 
- vbox := boxes.NewCHbox(1,
-  boxes.NewScrolledVbox(
-   // Convert a slice of a specific type to a gtk.Widgetter slice.
-   t.ToWidgetter(buttons)...,
-  ),
-  boxes.NewScrolledVbox(
-   labels...,
-  ),
- )
- vbox.SetHomogeneous(true)
-
- w.SetChild(vbox)
- w.Show()
+	w.SetChild(list)
+	w.Show()
 }
 ```
 
-You can test it by running `go run -v example.go`
+You can test it by running `go run -v ./examples/Boxes/main.go`
 
 ## Documentation
 
