@@ -52,7 +52,7 @@ func activate(app *gtk.Application) {
 	selectionModel := gtk.NewSingleSelection(model)
 	selectionModel.ConnectSelectionChanged(func(_, _ uint) {
 		fmt.Println("Index: ", selectionModel.Selected())
-		fmt.Println("Value: ", personNames[selectionModel.Selected()])
+		fmt.Println("Value: ", items[selectionModel.Selected()])
 	})
 
 	factory := gtk.NewSignalListItemFactory()
