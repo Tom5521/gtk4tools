@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Tom5521/gtk4tools/pkg/boxes"
 	"github.com/Tom5521/gtk4tools/pkg/widgets"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
@@ -52,11 +53,42 @@ func activate(app *gtk.Application) {
 			li.Child().(*gtk.Label).SetText(p.Name)
 		},
 	)
+
 	list.OnSelected = func(index int) {
 		fmt.Println("Index: ", index)
 		fmt.Println("Value: ", items[index])
 	}
+	list.OnMultipleSelected = func(indexes []int) {
+		fmt.Println("Indexes: ", indexes)
+		fmt.Print("Values: ")
+		var values []Person
+		for ci, v := range items {
+			for _, i := range indexes {
+				if i == ci {
+					values = append(values, v)
+				}
+			}
+		}
+		fmt.Println(values)
+	}
 
-	w.SetChild(list)
+	list.SetVExpand(true)
+
+	button := gtk.NewButtonWithLabel("Change Selection Model")
+	button.ConnectClicked(func() {
+		switch list.SelectionMode {
+		case widgets.SelectionNone:
+			list.SetSelectionModeller(widgets.SelectionSingle)
+		case widgets.SelectionSingle:
+			list.SetSelectionModeller(widgets.SelectionMultiple)
+		case widgets.SelectionMultiple:
+			list.SetSelectionModeller(widgets.SelectionNone)
+		}
+	})
+
+	w.SetChild(boxes.NewVbox(
+		list,
+		button,
+	))
 	w.Show()
 }
