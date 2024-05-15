@@ -21,13 +21,14 @@ func NewPointerList[T any](
 ) *PointerList[T] {
 	l := &PointerList[T]{
 		Items: items,
-		List:  &List[T]{},
+		List: &List[T]{
+			Setup:         setup,
+			Bind:          bind,
+			SelectionMode: smodel,
+			Factory:       gtk.NewSignalListItemFactory(),
+			Model:         gioutil.NewListModel[T](),
+		},
 	}
-	l.Setup = setup
-	l.Bind = bind
-	l.SelectionMode = smodel
-	l.Factory = gtk.NewSignalListItemFactory()
-	l.Model = gioutil.NewListModel[T]()
 
 	l.RefreshModel()
 	l.reConnectFactory()
