@@ -7,12 +7,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-// REFERENCE:
-// https://pkg.go.dev/github.com/diamondburned/gotk4/pkg/core/gioutil#ListModel
-
-type ListBind[T any] func(*gtk.ListItem, T)
-type ListSetup func(*gtk.ListItem)
-
 type ListSelectionMode int
 
 const (
@@ -20,6 +14,9 @@ const (
 	SelectionSingle
 	SelectionMultiple
 )
+
+type ListBind[T any] func(*gtk.ListItem, T)
+type ListSetup func(*gtk.ListItem)
 
 type List[T any] struct {
 	*gtk.ListView
@@ -36,7 +33,8 @@ type List[T any] struct {
 
 	SelectionMode     ListSelectionMode
 	SelectionModeller gtk.SelectionModeller
-	Model             *gioutil.ListModel[T]
+	// https://pkg.go.dev/github.com/diamondburned/gotk4/pkg/core/gioutil#ListModel
+	Model *gioutil.ListModel[T]
 }
 
 func NewList[T any](
