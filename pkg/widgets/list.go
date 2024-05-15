@@ -7,6 +7,9 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
+// REFERENCE:
+// https://pkg.go.dev/github.com/diamondburned/gotk4/pkg/core/gioutil#ListModel
+
 type ListBind[T any] func(*gtk.ListItem, T)
 type ListSetup func(*gtk.ListItem)
 
