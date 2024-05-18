@@ -214,6 +214,15 @@ func (l *List[T]) Refresh() {
 	l.RefreshModel()
 }
 
+func (l *List[T]) RefreshModel() {
+	if l.Model.NItems() == 0 {
+		for _, i := range l.Items {
+			l.Model.Append(i)
+		}
+	}
+	l.Model.Splice(0, l.Model.NItems(), l.Items...)
+}
+
 // Internal functions
 
 func (l *List[T]) reConnectFactory() {
@@ -258,13 +267,4 @@ func (l *List[T]) makeSelectionModeller(mode ListSelectionMode) {
 	default:
 		l.SelectionModeller = gtk.NewNoSelection(l.Model.ListModel)
 	}
-}
-
-func (l *List[T]) RefreshModel() {
-	if l.Model.NItems() == 0 {
-		for _, i := range l.Items {
-			l.Model.Append(i)
-		}
-	}
-	l.Model.Splice(0, l.Model.NItems(), l.Items...)
 }
