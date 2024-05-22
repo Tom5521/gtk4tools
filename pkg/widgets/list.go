@@ -169,26 +169,34 @@ func (l *List[T]) SelectMultiple(indexes ...int) {
 	}
 }
 
+// Requests to select a range of items.
 func (l *List[T]) SelectRange(pos, nItems int, unSelectRest bool) {
 	l.SelectionModeller.SelectRange(uint(pos), uint(nItems), unSelectRest)
 }
 
+// With SelectionNone and SelectionSingle it does nothing, and with SelectionMultiple,
+// it does what it promises, i.e., select all items in the list.
 func (l *List[T]) SelectAll() {
 	l.SelectionModeller.SelectAll()
 }
 
+// With SelectionSingle and SelectionMultiple it deselects the only element
+// that can be selected, with SelectionNone it does nothing.
 func (l *List[T]) UnselectAll() {
 	l.SelectionModeller.UnselectAll()
 }
 
+// Requests to unselect a range of items.
 func (l *List[T]) UnselectRange(pos, nItems int) {
 	l.SelectionModeller.UnselectRange(uint(pos), uint(nItems))
 }
 
+// Requests to unselect an item.
 func (l *List[T]) Unselect(index int) {
 	l.SelectionModeller.UnselectItem(uint(index))
 }
 
+// Regenerates the List.Items based on the model.
 func (l *List[T]) RefreshItems() {
 	l.Items = []T{}
 	for i := range l.Model.NItems() {
