@@ -7,14 +7,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type ListSelectionMode int
-
-const (
-	SelectionNone ListSelectionMode = iota
-	SelectionSingle
-	SelectionMultiple
-)
-
 type ListBind[T any] func(*gtk.ListItem, T)
 type ListSetup func(*gtk.ListItem)
 
@@ -68,10 +60,6 @@ func (l *List[T]) SetSelectionModeller(mode ListSelectionMode) {
 	l.makeSelectionModeller(mode)
 	l.ListView.SetModel(l.SelectionModeller)
 	l.reConnectSelection()
-}
-
-func (l *List[T]) RefreshSelectionModeller() {
-	l.SetSelectionModeller(l.SelectionMode)
 }
 
 // Re-generate the list with the items provided.
@@ -139,13 +127,13 @@ func (l *List[T]) MultipleSelected() []int {
 	return out
 }
 
-// The SetSelected method behaves as expected when applied to a SingleSelection SelectionModel.
+// The Select method behaves as expected when applied to a SingleSelection SelectionModel.
 // It selects the item at the specified index. However, when applied to a MultipleSelection,
 // it behaves differently. Instead of selecting only the item at the specified index,
 // it deselects all other items and selects only the one at that index.
 //
 // In the case of NoSelection, it simply does nothing.
-func (l *List[T]) SetSelected(index int) {
+func (l *List[T]) Select(index int) {
 	if index <= -1 {
 		return
 	}
@@ -164,7 +152,7 @@ func (l *List[T]) SetSelected(index int) {
 // it will throw an error, i.e. it will crash.
 //
 // If an element is already selected, deselects it.
-func (l *List[T]) SetMultipleSelections(indexes ...int) {
+func (l *List[T]) SelectMultiple(indexes ...int) {
 	model, ok := l.SelectionModeller.(*gtk.MultiSelection)
 	if !ok {
 		return
@@ -179,6 +167,26 @@ func (l *List[T]) SetMultipleSelections(indexes ...int) {
 		}
 		model.SelectItem(uint(i), false)
 	}
+}
+
+func (l *List[T]) SelectRange(pos, nItems int, unSelectRest bool) {
+	l.SelectionModeller.SelectRange(uint(pos), uint(nItems), unSelectRest)
+}
+
+func (l *List[T]) SelectAll() {
+	l.SelectionModeller.SelectAll()
+}
+
+func (l *List[T]) UnselectAll() {
+	l.SelectionModeller.UnselectAll()
+}
+
+func (l *List[T]) UnselectRange(pos, nItems int) {
+	l.SelectionModeller.UnselectRange(uint(pos), uint(nItems))
+}
+
+func (l *List[T]) Unselect(index int) {
+	l.SelectionModeller.UnselectItem(uint(index))
 }
 
 func (l *List[T]) RefreshItems() {
@@ -221,6 +229,10 @@ func (l *List[T]) RefreshModel() {
 		}
 	}
 	l.Model.Splice(0, l.Model.NItems(), l.Items...)
+}
+
+func (l *List[T]) RefreshSelectionModeller() {
+	l.SetSelectionModeller(l.SelectionMode)
 }
 
 // Internal functions
