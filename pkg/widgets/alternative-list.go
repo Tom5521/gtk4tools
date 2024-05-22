@@ -5,8 +5,8 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type AlternativeListSetup func(listitem *gtk.ListItem)
-type AlternativeListBind func(listitem *gtk.ListItem, index int)
+type AlternativeListSetup ListSetup
+type AlternativeListBind ListBind[int]
 type AlternativeListLen func() int
 
 type AlternativeList struct {
