@@ -37,7 +37,7 @@ func ExampleAlternativeList() {
 
 func ExampleList() {
 	items := []string{"1", "2", "3"}
-	list := widgets.NewStringList(
+	list := widgets.NewList(
 		items,
 		widgets.SelectionMultiple,
 		func(listitem *gtk.ListItem) {
@@ -61,7 +61,7 @@ func ExampleList() {
 
 func ExampleList_RefreshFactory() {
 	items := []string{"1", "2", "3"}
-	list := widgets.NewStringList(
+	list := widgets.NewList(
 		items,
 		widgets.SelectionMultiple,
 		func(listitem *gtk.ListItem) {
