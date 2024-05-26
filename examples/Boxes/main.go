@@ -29,8 +29,7 @@ func activate(app *gtk.Application) {
 
 	var buttons []*gtk.Button
 	for i := range 30 {
-		button := gtk.NewButtonWithLabel("Button " + strconv.Itoa(i))
-		button.ConnectClicked(func() {
+		button := widgets.NewButton("Button "+strconv.Itoa(i), func() {
 			fmt.Println(i)
 		})
 		buttons = append(buttons, button)
