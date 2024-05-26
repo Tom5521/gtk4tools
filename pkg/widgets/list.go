@@ -80,13 +80,12 @@ func (l *List[T]) Append(item T) {
 	l.Model.Append(item)
 }
 
-func (l *List[T]) Splice(pos, nRemovals int, additions ...T) {
-	if pos <= -1 || nRemovals <= -1 {
+func (l *List[T]) Splice(pos, rms int, values ...T) {
+	if pos <= -1 || rms <= -1 {
 		return
 	}
-	l.Items = slices.Delete(l.Items, pos, nRemovals)
-	l.Items = append(l.Items, additions...)
-	l.Model.Splice(pos, nRemovals, additions...)
+	l.Items = splice(pos, rms, values)
+	l.Model.Splice(pos, rms, values...)
 }
 
 // Returns the index of the selected item,
