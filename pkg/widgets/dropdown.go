@@ -61,13 +61,7 @@ func (d *DropDown[T]) Splice(pos, rms int, values ...T) {
 }
 
 func (d *DropDown[T]) RefreshModel() {
-	if d.Model.NItems() == 0 {
-		for _, i := range d.Items {
-			d.Model.Append(i)
-		}
-		return
-	}
-	d.Model.Splice(0, 0, d.Items...)
+	d.Model.Splice(0, d.Model.NItems(), d.Items...)
 }
 
 // Private methods.
