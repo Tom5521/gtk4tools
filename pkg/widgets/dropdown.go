@@ -1,34 +1,97 @@
 package widgets
 
-import "github.com/diamondburned/gotk4/pkg/gtk/v4"
+import (
+	"slices"
 
-type DropDown struct {
+	"github.com/diamondburned/gotk4/pkg/core/gioutil"
+	"github.com/diamondburned/gotk4/pkg/gtk/v4"
+)
+
+type DropDown[T any] struct {
 	*gtk.DropDown
-	Items []string
 
-	OnSelected func(selected uint)
+	Items   []T
+	Model   *gioutil.ListModel[T]
+	Factory *gtk.SignalListItemFactory
+
+	OnChanged func(index int)
+
+	Setup FactorySetup
+	Bind  ListBind[T]
 }
 
-func NewDropDown(items []string) *DropDown {
-	d := &DropDown{
-		Items:    items,
-		DropDown: gtk.NewDropDownFromStrings(items),
+func NewDropDown[T any](
+	items []T,
+	setup FactorySetup,
+	bind ListBind[T],
+) *DropDown[T] {
+	d := &DropDown[T]{
+		Items:   items,
+		Model:   gioutil.NewListModel[T](),
+		Factory: gtk.NewSignalListItemFactory(),
+
+		Setup: setup,
+		Bind:  bind,
 	}
-	d.reConnectOnSelected()
+
+	d.RefreshModel()
+	d.connectFactory()
+
+	d.DropDown = gtk.NewDropDown(d.Model.ListModel, nil)
+	d.SetFactory(&d.Factory.ListItemFactory)
+
+	d.connectChanged()
+
 	return d
 }
 
-func (d *DropDown) Refresh() {
-	d.reConnectOnSelected()
+func (d *DropDown[T]) Append(v T) {
+	d.Items = append(d.Items, v)
+	d.Model.Append(v)
 }
 
-// Internal functions
+func (d *DropDown[T]) Remove(index int) {
+	d.Items = slices.Delete(d.Items, index, index+1)
+	d.Model.Remove(index)
+}
 
-func (d *DropDown) reConnectOnSelected() {
+func (d *DropDown[T]) Splice(pos, rms int, values ...T) {
+	d.Items = splice(d.Items, pos, rms, values)
+	d.Model.Splice(pos, rms, values...)
+}
+
+func (d *DropDown[T]) RefreshModel() {
+	if d.Model.NItems() == 0 {
+		for _, i := range d.Items {
+			d.Model.Append(i)
+		}
+		return
+	}
+	d.Model.Splice(0, 0, d.Items...)
+}
+
+// Private methods.
+
+func (d *DropDown[T]) connectChanged() {
 	d.ConnectAfter("notify::selected", func() {
-		if d.OnSelected == nil {
+		if d.OnChanged == nil {
 			return
 		}
-		d.OnSelected(d.Selected())
+		d.OnChanged(int(d.Selected()))
+	})
+}
+
+func (d *DropDown[T]) connectFactory() {
+	d.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+		if d.Setup == nil {
+			return
+		}
+		d.Setup(listitem)
+	})
+	d.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+		if d.Bind == nil {
+			return
+		}
+		d.Bind(listitem, d.Items[listitem.Position()])
 	})
 }
