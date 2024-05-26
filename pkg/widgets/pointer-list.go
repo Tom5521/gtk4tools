@@ -16,7 +16,7 @@ type PointerList[T any] struct {
 func NewPointerList[T any](
 	items *[]T,
 	smodel ListSelectionMode,
-	setup ListSetup,
+	setup FactorySetup,
 	bind ListBind[T],
 ) *PointerList[T] {
 	l := &PointerList[T]{

@@ -8,14 +8,13 @@ import (
 )
 
 type ListBind[T any] func(*gtk.ListItem, T)
-type ListSetup func(*gtk.ListItem)
 
 type List[T any] struct {
 	*gtk.ListView
 
 	Items []T
 
-	Setup ListSetup
+	Setup FactorySetup
 	Bind  ListBind[T]
 
 	OnSelected         func(index int)
@@ -32,7 +31,7 @@ type List[T any] struct {
 func NewList[T any](
 	items []T,
 	smodel ListSelectionMode,
-	setup ListSetup,
+	setup FactorySetup,
 	bind ListBind[T],
 ) *List[T] {
 	l := &List[T]{

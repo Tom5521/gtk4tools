@@ -16,7 +16,7 @@ type StringList struct {
 func NewStringList(
 	items []string,
 	smodel ListSelectionMode,
-	setup ListSetup,
+	setup FactorySetup,
 	bind ListBind[string],
 ) *StringList {
 	return &StringList{

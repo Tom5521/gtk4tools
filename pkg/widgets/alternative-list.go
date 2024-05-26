@@ -5,7 +5,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type AlternativeListSetup ListSetup
 type AlternativeListBind ListBind[int]
 type AlternativeListLen func() int
 
@@ -21,7 +20,7 @@ type AlternativeList struct {
 func NewAlternativeList(
 	smodel ListSelectionMode,
 	lenfunc AlternativeListLen,
-	setup AlternativeListSetup,
+	setup FactorySetup,
 	bind AlternativeListBind,
 ) *AlternativeList {
 	l := &AlternativeList{
@@ -29,7 +28,7 @@ func NewAlternativeList(
 			Model:         gioutil.NewListModel[int](),
 			Factory:       gtk.NewSignalListItemFactory(),
 			SelectionMode: smodel,
-			Setup:         ListSetup(setup),
+			Setup:         setup,
 			Bind:          ListBind[int](bind),
 		},
 		Len: lenfunc,
