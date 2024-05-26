@@ -74,8 +74,7 @@ func activate(app *gtk.Application) {
 
 	list.SetVExpand(true)
 
-	button := gtk.NewButtonWithLabel("Change Selection Model")
-	button.ConnectClicked(func() {
+	button := widgets.NewButton("Change Selection Model", func() {
 		switch list.SelectionMode {
 		case widgets.SelectionNone:
 			list.SetSelectionModeller(widgets.SelectionSingle)
