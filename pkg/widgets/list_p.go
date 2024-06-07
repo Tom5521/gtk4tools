@@ -7,19 +7,19 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type PointerList[T any] struct {
+type ListP[T any] struct {
 	*List[T]
 
 	Items *[]T
 }
 
-func NewPointerList[T any](
+func NewListP[T any](
 	items *[]T,
 	smodel ListSelectionMode,
 	setup FactorySetup,
 	bind ListBind[T],
-) *PointerList[T] {
-	l := &PointerList[T]{
+) *ListP[T] {
+	l := &ListP[T]{
 		Items: items,
 		List: &List[T]{
 			Setup:         setup,
@@ -41,11 +41,11 @@ func NewPointerList[T any](
 }
 
 // Re-generate the list with the items provided.
-func (l *PointerList[T]) SetItems(items *[]T) {
+func (l *ListP[T]) SetItems(items *[]T) {
 	l.Splice(0, l.Model.NItems(), *items...)
 }
 
-func (l *PointerList[T]) Remove(index int) {
+func (l *ListP[T]) Remove(index int) {
 	if index <= -1 {
 		return
 	}
@@ -53,12 +53,12 @@ func (l *PointerList[T]) Remove(index int) {
 	l.Model.Remove(index)
 }
 
-func (l *PointerList[T]) Append(item T) {
+func (l *ListP[T]) Append(item T) {
 	*l.Items = append(*l.Items, item)
 	l.Model.Append(item)
 }
 
-func (l *PointerList[T]) Splice(pos, nRemovals int, additions ...T) {
+func (l *ListP[T]) Splice(pos, nRemovals int, additions ...T) {
 	if pos <= -1 || nRemovals <= -1 {
 		return
 	}
@@ -67,7 +67,7 @@ func (l *PointerList[T]) Splice(pos, nRemovals int, additions ...T) {
 	l.Model.Splice(pos, nRemovals, additions...)
 }
 
-func (l *PointerList[T]) RefreshItems() {
+func (l *ListP[T]) RefreshItems() {
 	*l.Items = []T{}
 	for i := range l.Model.NItems() {
 		*l.Items = append(*l.Items, l.Model.Item(i))
@@ -76,7 +76,7 @@ func (l *PointerList[T]) RefreshItems() {
 
 // Internal functions
 
-func (l *PointerList[T]) reConnectFactory() {
+func (l *ListP[T]) reConnectFactory() {
 	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
 		if l.Setup == nil {
 			return
@@ -91,7 +91,7 @@ func (l *PointerList[T]) reConnectFactory() {
 	})
 }
 
-func (l *PointerList[T]) RefreshModel() {
+func (l *ListP[T]) RefreshModel() {
 	if l.Model.NItems() == 0 {
 		for _, i := range *l.Items {
 			l.Model.Append(i)
