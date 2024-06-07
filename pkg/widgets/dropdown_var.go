@@ -7,18 +7,18 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type DropDownP[T any] struct {
+type DropDownVar[T any] struct {
 	*DropDown[T]
 
 	Items *[]T
 }
 
-func NewDropDownP[T any](
+func NewDropDownVar[T any](
 	items *[]T,
 	setup FactorySetup,
 	bind ListBind[T],
-) *DropDownP[T] {
-	d := &DropDownP[T]{
+) *DropDownVar[T] {
+	d := &DropDownVar[T]{
 		DropDown: &DropDown[T]{
 			Model:   gioutil.NewListModel[T](),
 			Factory: gtk.NewSignalListItemFactory(),
@@ -40,22 +40,22 @@ func NewDropDownP[T any](
 	return d
 }
 
-func (d *DropDownP[T]) Append(v T) {
+func (d *DropDownVar[T]) Append(v T) {
 	*d.Items = append(*d.Items, v)
 	d.Model.Append(v)
 }
 
-func (d *DropDownP[T]) Remove(index int) {
+func (d *DropDownVar[T]) Remove(index int) {
 	*d.Items = slices.Delete(*d.Items, index, index+1)
 	d.Model.Remove(index)
 }
 
-func (d *DropDownP[T]) Splice(pos, rms int, values ...T) {
+func (d *DropDownVar[T]) Splice(pos, rms int, values ...T) {
 	*d.Items = splice(*d.Items, pos, rms, values)
 	d.Model.Splice(pos, rms, values...)
 }
 
-func (d *DropDownP[T]) RefreshModel() {
+func (d *DropDownVar[T]) RefreshModel() {
 	if d.Model.NItems() == 0 {
 		for _, i := range *d.Items {
 			d.Model.Append(i)
@@ -65,7 +65,7 @@ func (d *DropDownP[T]) RefreshModel() {
 	d.Model.Splice(0, 0, *d.Items...)
 }
 
-func (d *DropDownP[T]) connectFactory() {
+func (d *DropDownVar[T]) connectFactory() {
 	d.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
 		if d.Setup == nil {
 			return
