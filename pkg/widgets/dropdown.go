@@ -56,7 +56,7 @@ func (d *DropDown[T]) Remove(index int) {
 }
 
 func (d *DropDown[T]) Splice(pos, rms int, values ...T) {
-	d.Items = splice(d.Items, pos, rms, values)
+	spliceVar(&d.Items, pos, rms, values)
 	d.Model.Splice(pos, rms, values...)
 }
 

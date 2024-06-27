@@ -8,3 +8,7 @@ func splice[T any](slice []T, start, count int, items []T) []T {
 	copy(result[start+len(items):], slice[start+count:])
 	return result
 }
+
+func spliceVar[T any](slice *[]T, start, count int, items []T) {
+	*slice = splice(*slice, start, count, items)
+}

@@ -83,7 +83,7 @@ func (l *List[T]) Splice(pos, rms int, values ...T) {
 	if pos <= -1 || rms <= -1 {
 		return
 	}
-	l.Items = splice(l.Items, pos, rms, values)
+	spliceVar(&l.Items, pos, rms, values)
 	l.Model.Splice(pos, rms, values...)
 }
 
