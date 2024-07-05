@@ -1,6 +1,6 @@
 module github.com/Tom5521/gtk4tools
 
-go 1.22.0
+go 1.22.4
 
 require github.com/diamondburned/gotk4/pkg v0.2.2
 
