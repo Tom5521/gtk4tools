@@ -54,6 +54,7 @@ func NewList[T any](
 
 	return l
 }
+
 func (l *List[T]) SetSelectionModeller(mode ListSelectionMode) {
 	l.SelectionMode = mode
 	l.makeSelectionModeller(mode)
