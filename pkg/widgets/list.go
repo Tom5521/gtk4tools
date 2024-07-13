@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
+	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -64,7 +65,7 @@ func (l *List[T]) SetSelectionModeller(mode ListSelectionMode) {
 
 // Re-generate the list with the items provided.
 func (l *List[T]) SetItems(items []T) {
-	l.Splice(0, l.Model.NItems(), items...)
+	l.Splice(0, int(l.Model.NItems()), items...)
 }
 
 func (l *List[T]) Remove(index int) {
@@ -199,7 +200,7 @@ func (l *List[T]) Unselect(index int) {
 func (l *List[T]) RefreshItems() {
 	l.Items = []T{}
 	for i := range l.Model.NItems() {
-		l.Items = append(l.Items, l.Model.Item(i))
+		l.Items = append(l.Items, l.Model.Item(i).Cast().(T))
 	}
 }
 
@@ -235,7 +236,7 @@ func (l *List[T]) RefreshModel() {
 			l.Model.Append(i)
 		}
 	}
-	l.Model.Splice(0, l.Model.NItems(), l.Items...)
+	l.Model.Splice(0, int(l.Model.NItems()), l.Items...)
 }
 
 func (l *List[T]) RefreshSelectionModeller() {
@@ -245,16 +246,18 @@ func (l *List[T]) RefreshSelectionModeller() {
 // Internal functions
 
 func (l *List[T]) reConnectFactory() {
-	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+	l.Factory.ConnectSetup(func(obj *glib.Object) {
 		if l.Setup == nil {
 			return
 		}
+		listitem := obj.Cast().(*gtk.ListItem)
 		l.Setup(listitem)
 	})
-	l.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+	l.Factory.ConnectBind(func(obj *glib.Object) {
 		if l.Bind == nil {
 			return
 		}
+		listitem := obj.Cast().(*gtk.ListItem)
 		l.Bind(listitem, l.Items[listitem.Position()])
 	})
 }

@@ -4,6 +4,7 @@ import (
 	"slices"
 
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
+	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -66,16 +67,18 @@ func (d *DropDownVar[T]) RefreshModel() {
 }
 
 func (d *DropDownVar[T]) connectFactory() {
-	d.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+	d.Factory.ConnectSetup(func(obj *glib.Object) {
 		if d.Setup == nil {
 			return
 		}
+		listitem := obj.Cast().(*gtk.ListItem)
 		d.Setup(listitem)
 	})
-	d.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+	d.Factory.ConnectBind(func(obj *glib.Object) {
 		if d.Bind == nil {
 			return
 		}
+		listitem := obj.Cast().(*gtk.ListItem)
 		d.Bind(listitem, (*d.Items)[listitem.Position()])
 	})
 }
