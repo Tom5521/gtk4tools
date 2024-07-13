@@ -29,15 +29,15 @@ func activate(app *gtk.Application) {
 	w := gtk.NewApplicationWindow(app)
 
 	items := []Person{
-		Person{
+		{
 			Name: "Jonh Doe 1",
 			Age:  21,
 		},
-		Person{
+		{
 			Name: "Carlos Gimenez",
 			Age:  26,
 		},
-		Person{
+		{
 			Name: "Caroline Simpson",
 			Age:  20,
 		},
@@ -89,5 +89,5 @@ func activate(app *gtk.Application) {
 		list,
 		button,
 	))
-	w.Show()
+	w.Present()
 }

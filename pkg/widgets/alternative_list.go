@@ -2,11 +2,14 @@ package widgets
 
 import (
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
+	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type AlternativeListBind ListBind[int]
-type AlternativeListLen func() int
+type (
+	AlternativeListBind ListBind[int]
+	AlternativeListLen  func() int
+)
 
 type AlternativeList struct {
 	*List[int]
@@ -63,19 +66,21 @@ func (l *AlternativeList) Refresh() {
 }
 
 func (l *AlternativeList) RefreshModel() {
-	l.Model.Splice(0, l.Model.NItems(), make([]int, l.Len())...)
+	l.Model.Splice(0, int(l.Model.NItems()), make([]int, l.Len())...)
 }
 
 // PRIVATE METHODS
 
 func (l *AlternativeList) reConnectFactory() {
-	l.Factory.ConnectSetup(func(listitem *gtk.ListItem) {
+	l.Factory.ConnectSetup(func(obj *glib.Object) {
+		listitem := obj.Cast().(*gtk.ListItem)
 		if l.Setup == nil {
 			return
 		}
 		l.Setup(listitem)
 	})
-	l.Factory.ConnectBind(func(listitem *gtk.ListItem) {
+	l.Factory.ConnectBind(func(obj *glib.Object) {
+		listitem := obj.Cast().(*gtk.ListItem)
 		if l.Bind == nil {
 			return
 		}

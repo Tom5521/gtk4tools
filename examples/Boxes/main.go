@@ -92,5 +92,5 @@ func activate(app *gtk.Application) {
 	}()
 
 	w.SetChild(vbox)
-	w.Show()
+	w.Present()
 }
