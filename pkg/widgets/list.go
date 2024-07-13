@@ -3,8 +3,8 @@ package widgets
 import (
 	"slices"
 
+	"github.com/Tom5521/gtk4tools/pkg/tools"
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
-	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -65,7 +65,7 @@ func (l *List[T]) SetSelectionModeller(mode ListSelectionMode) {
 
 // Re-generate the list with the items provided.
 func (l *List[T]) SetItems(items []T) {
-	l.Splice(0, int(l.Model.NItems()), items...)
+	l.Splice(0, l.Model.Len(), items...)
 }
 
 func (l *List[T]) Remove(index int) {
@@ -85,8 +85,8 @@ func (l *List[T]) Splice(pos, rms int, values ...T) {
 	if pos <= -1 || rms <= -1 {
 		return
 	}
-	spliceVar(&l.Items, pos, rms, values)
 	l.Model.Splice(pos, rms, values...)
+	l.RefreshItems()
 }
 
 // Returns the index of the selected item,
@@ -199,9 +199,10 @@ func (l *List[T]) Unselect(index int) {
 // Regenerates the List.Items based on the model.
 func (l *List[T]) RefreshItems() {
 	l.Items = []T{}
-	for i := range l.Model.NItems() {
-		l.Items = append(l.Items, l.Model.Item(i).Cast().(T))
-	}
+	l.Model.All()(func(t T) bool {
+		l.Items = append(l.Items, t)
+		return true
+	})
 }
 
 // Can be used when modifying List.Setup and/or List.Bind to redraw
@@ -231,12 +232,12 @@ func (l *List[T]) Refresh() {
 }
 
 func (l *List[T]) RefreshModel() {
-	if l.Model.NItems() == 0 {
+	if l.Model.Len() == 0 {
 		for _, i := range l.Items {
 			l.Model.Append(i)
 		}
 	}
-	l.Model.Splice(0, int(l.Model.NItems()), l.Items...)
+	l.Model.Splice(0, l.Model.Len(), l.Items...)
 }
 
 func (l *List[T]) RefreshSelectionModeller() {
@@ -246,20 +247,18 @@ func (l *List[T]) RefreshSelectionModeller() {
 // Internal functions
 
 func (l *List[T]) reConnectFactory() {
-	l.Factory.ConnectSetup(func(obj *glib.Object) {
+	l.Factory.ConnectSetup(tools.NewFactorySetup(func(listitem *gtk.ListItem) {
 		if l.Setup == nil {
 			return
 		}
-		listitem := obj.Cast().(*gtk.ListItem)
 		l.Setup(listitem)
-	})
-	l.Factory.ConnectBind(func(obj *glib.Object) {
+	}))
+	l.Factory.ConnectBind(tools.NewFactoryBind(func(listitem *gtk.ListItem, pos int) {
 		if l.Bind == nil {
 			return
 		}
-		listitem := obj.Cast().(*gtk.ListItem)
-		l.Bind(listitem, l.Items[listitem.Position()])
-	})
+		l.Bind(listitem, l.Model.At(pos))
+	}))
 }
 
 func (l *List[T]) reConnectSelection() {

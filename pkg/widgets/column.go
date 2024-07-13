@@ -1,8 +1,8 @@
 package widgets
 
 import (
+	"github.com/Tom5521/gtk4tools/pkg/tools"
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
-	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -34,19 +34,18 @@ func NewColumn[T any](
 		Factory: gtk.NewSignalListItemFactory(),
 	}
 
-	c.Factory.ConnectSetup(func(obj *glib.Object) {
-		if c.Setup != nil {
-			listitem := obj.Cast().(*gtk.ListItem)
-			c.Setup(listitem)
+	c.Factory.ConnectSetup(tools.NewFactorySetup(func(listitem *gtk.ListItem) {
+		if c.Setup == nil {
+			return
 		}
-	})
-	c.Factory.ConnectBind(func(obj *glib.Object) {
-		if c.Bind != nil {
-			listitem := obj.Cast().(*gtk.ListItem)
-			item := c.Model.Item(listitem.Position())
-			c.Bind(listitem, item.Cast().(T))
+		c.Setup(listitem)
+	}))
+	c.Factory.ConnectBind(tools.NewFactoryBind(func(listitem *gtk.ListItem, pos int) {
+		if c.Bind == nil {
+			return
 		}
-	})
+		c.Bind(listitem, c.Model.At(pos))
+	}))
 
 	c.ColumnViewColumn = gtk.NewColumnViewColumn(title, &c.Factory.ListItemFactory)
 

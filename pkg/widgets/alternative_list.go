@@ -1,8 +1,8 @@
 package widgets
 
 import (
+	"github.com/Tom5521/gtk4tools/pkg/tools"
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
-	"github.com/diamondburned/gotk4/pkg/core/glib"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
@@ -66,24 +66,19 @@ func (l *AlternativeList) Refresh() {
 }
 
 func (l *AlternativeList) RefreshModel() {
-	l.Model.Splice(0, int(l.Model.NItems()), make([]int, l.Len())...)
+	l.Model.Splice(0, l.Model.Len(), make([]int, l.Len())...)
 }
 
 // PRIVATE METHODS
 
 func (l *AlternativeList) reConnectFactory() {
-	l.Factory.ConnectSetup(func(obj *glib.Object) {
-		listitem := obj.Cast().(*gtk.ListItem)
+	l.Factory.ConnectSetup(tools.NewFactorySetup(func(listitem *gtk.ListItem) {
 		if l.Setup == nil {
 			return
 		}
 		l.Setup(listitem)
-	})
-	l.Factory.ConnectBind(func(obj *glib.Object) {
-		listitem := obj.Cast().(*gtk.ListItem)
-		if l.Bind == nil {
-			return
-		}
-		l.Bind(listitem, int(listitem.Position()))
-	})
+	}))
+	l.Factory.ConnectBind(tools.NewFactoryBind(func(listitem *gtk.ListItem, pos int) {
+		l.Bind(listitem, pos)
+	}))
 }
