@@ -24,5 +24,5 @@ func ExampleNewNoteBook() {
 	)
 
 	w.SetChild(notebook)
-	w.Show()
+	w.Present()
 }
