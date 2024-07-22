@@ -1,8 +1,10 @@
 package widgets
 
-import "github.com/diamondburned/gotk4/pkg/gtk/v4"
+import (
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
+)
 
-type FactorySetup func(*gtk.ListItem)
+type FactorySetup func(gtools.ListItem)
 
 type ListSelectionMode int
 

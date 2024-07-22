@@ -3,6 +3,7 @@ package widgets_test
 import (
 	"fmt"
 
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/Tom5521/gtk4tools/pkg/widgets"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -15,10 +16,10 @@ func ExampleAlternativeList() {
 		func() int {
 			return len(items)
 		},
-		func(listitem *gtk.ListItem) {
+		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem, index int) {
+		func(listitem gtools.ListItem, index int) {
 			listitem.Child().(*gtk.Label).SetText(items[index])
 		},
 	)
@@ -40,10 +41,10 @@ func ExampleList() {
 	list := widgets.NewList(
 		items,
 		widgets.SelectionMultiple,
-		func(listitem *gtk.ListItem) {
+		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem, obj string) {
+		func(listitem gtools.ListItem, obj string) {
 			listitem.Child().(*gtk.Label).SetText(obj)
 		},
 	)
@@ -64,18 +65,18 @@ func ExampleList_RefreshFactory() {
 	list := widgets.NewList(
 		items,
 		widgets.SelectionMultiple,
-		func(listitem *gtk.ListItem) {
+		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem, obj string) {
+		func(listitem gtools.ListItem, obj string) {
 			listitem.Child().(*gtk.Label).SetText(obj)
 		},
 	)
 
-	list.Setup = func(li *gtk.ListItem) {
+	list.Setup = func(li gtools.ListItem) {
 		li.SetChild(gtk.NewText())
 	}
-	list.Bind = func(li *gtk.ListItem, s string) {
+	list.Bind = func(li gtools.ListItem, s string) {
 		li.Child().(*gtk.Text).SetText(s)
 	}
 	list.RefreshFactory()

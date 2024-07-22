@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
-	t "github.com/Tom5521/gtk4tools/pkg/tools"
+	t "github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/Tom5521/gtk4tools/pkg/widgets"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
@@ -50,10 +50,10 @@ func activate(app *gtk.Application) {
 	list := widgets.NewList(
 		items,
 		widgets.SelectionMultiple,
-		func(listitem *gtk.ListItem) {
+		func(listitem t.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem *gtk.ListItem, item string) {
+		func(listitem t.ListItem, item string) {
 			label := listitem.Child().(*gtk.Label)
 			label.SetText(item)
 		},

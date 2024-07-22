@@ -1,4 +1,4 @@
-package tools
+package gtools
 
 import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"

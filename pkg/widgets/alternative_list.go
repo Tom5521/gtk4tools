@@ -1,7 +1,7 @@
 package widgets
 
 import (
-	"github.com/Tom5521/gtk4tools/pkg/tools"
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -72,13 +72,13 @@ func (l *AlternativeList) RefreshModel() {
 // PRIVATE METHODS
 
 func (l *AlternativeList) reConnectFactory() {
-	l.Factory.ConnectSetup(tools.NewFactorySetup(func(listitem *gtk.ListItem) {
+	l.Factory.ConnectSetup(gtools.NewFactorySetup(func(listitem gtools.ListItem) {
 		if l.Setup == nil {
 			return
 		}
 		l.Setup(listitem)
 	}))
-	l.Factory.ConnectBind(tools.NewFactoryBind(func(listitem *gtk.ListItem, pos int) {
+	l.Factory.ConnectBind(gtools.NewFactoryBind(func(listitem gtools.ListItem, pos int) {
 		l.Bind(listitem, pos)
 	}))
 }

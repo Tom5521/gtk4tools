@@ -3,7 +3,7 @@ package widgets
 import (
 	"slices"
 
-	"github.com/Tom5521/gtk4tools/pkg/tools"
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/diamondburned/gotk4/pkg/core/gioutil"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -77,13 +77,13 @@ func (d *DropDown[T]) connectChanged() {
 }
 
 func (d *DropDown[T]) connectFactory() {
-	d.Factory.ConnectSetup(tools.NewFactorySetup(func(listitem *gtk.ListItem) {
+	d.Factory.ConnectSetup(gtools.NewFactorySetup(func(listitem gtools.ListItem) {
 		if d.Setup == nil {
 			return
 		}
 		d.Setup(listitem)
 	}))
-	d.Factory.ConnectBind(tools.NewFactoryBind(func(listitem *gtk.ListItem, pos int) {
+	d.Factory.ConnectBind(gtools.NewFactoryBind(func(listitem gtools.ListItem, pos int) {
 		if d.Bind == nil {
 			return
 		}

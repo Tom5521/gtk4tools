@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/Tom5521/gtk4tools/pkg/widgets"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
@@ -46,10 +47,10 @@ func activate(app *gtk.Application) {
 	list := widgets.NewList[Person](
 		items,
 		widgets.SelectionSingle,
-		func(li *gtk.ListItem) {
+		func(li gtools.ListItem) {
 			li.SetChild(gtk.NewLabel(""))
 		},
-		func(li *gtk.ListItem, p Person) {
+		func(li gtools.ListItem, p Person) {
 			li.Child().(*gtk.Label).SetText(p.Name)
 		},
 	)
