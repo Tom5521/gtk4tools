@@ -5,6 +5,19 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
+var _ Appender = (*gtk.Box)(nil)
+
+// It is simply an interface of a glib.Objector that has the append method.
+type Appender interface {
+	glib.Objector
+	Append(gtk.Widgetter)
+}
+
+var (
+	_ ListItem = (*gtk.ListItem)(nil)
+	_ ListItem = (*gtk.ColumnViewCell)(nil)
+)
+
 type ListItem interface {
 	glib.Objector
 
@@ -25,8 +38,3 @@ type ListItem interface {
 	SetFocusable(focusable bool)
 	SetSelectable(selectable bool)
 }
-
-var (
-	_ ListItem = (*gtk.ListItem)(nil)
-	_ ListItem = (*gtk.ColumnViewCell)(nil)
-)
