@@ -56,12 +56,12 @@ func activate(app *gtk.Application) {
 	})
 
 	factory := gtk.NewSignalListItemFactory()
-	factory.ConnectSetup(func(listitem *gtk.ListItem) {
-		listitem.SetChild(gtk.NewLabel(""))
+	factory.ConnectSetup(func(listitem *glib.Object) {
+		listitem.Cast().(*gtk.ListItem).SetChild(gtk.NewLabel(""))
 	})
 	factory.ConnectBind(func(listitem *gtk.ListItem) {
-		obj := listitem.Item().Cast().(*gtk.StringObject)
-		listitem.Child().(*gtk.Label).SetText(obj.String())
+		obj := listitem.Cast().(*gtk.ListItem).Item().Cast().(*gtk.StringObject)
+		listitem.Cast().(*gtk.ListItem).Child().(*gtk.Label).SetText(obj.String())
 	})
 
 	list := gtk.NewListView(selectionModel, &factory.ListItemFactory)
@@ -100,10 +100,10 @@ func activate(app *gtk.Application) {
 	list := widgets.NewList[Person](
 		items,
 		widgets.SelectionSingle,
-		func(li *gtk.ListItem) {
+		func(li gtool.ListItem) {
 			li.SetChild(gtk.NewLabel(""))
 		},
-		func(li *gtk.ListItem, p Person) {
+		func(li gtool.ListItem, p Person) {
 			li.Child().(*gtk.Label).SetText(p.Name)
 		},
 	)
