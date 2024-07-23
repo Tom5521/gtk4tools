@@ -99,18 +99,18 @@ func activate(app *gtk.Application) {
 
 	list := widgets.NewList[Person](
 		items,
-		widgets.SelectionSingle,
-		func(li gtool.ListItem) {
+		gtools.SelectionSingle,
+		func(li gtools.ListItem) {
 			li.SetChild(gtk.NewLabel(""))
 		},
-		func(li gtool.ListItem, p Person) {
+		func(li gtools.ListItem, p Person) {
 			li.Child().(*gtk.Label).SetText(p.Name)
 		},
 	)
-	list.OnSelected = func(index int) {
+	list.ConnectSelected(func(index int) {
 		fmt.Println("Index: ", index)
 		fmt.Println("Value: ", items[index])
-	}
+	})
 
 	w.SetChild(list)
 	w.Show()
