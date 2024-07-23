@@ -17,7 +17,7 @@ type DropDownVar[T any] struct {
 func NewDropDownVar[T any](
 	items *[]T,
 	setup FactorySetup,
-	bind ListBind[T],
+	bind FactoryBind[T],
 ) *DropDownVar[T] {
 	d := &DropDownVar[T]{
 		DropDown: &DropDown[T]{

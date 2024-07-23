@@ -18,13 +18,13 @@ type DropDown[T any] struct {
 	OnChanged func(index int)
 
 	Setup FactorySetup
-	Bind  ListBind[T]
+	Bind  FactoryBind[T]
 }
 
 func NewDropDown[T any](
 	items []T,
 	setup FactorySetup,
-	bind ListBind[T],
+	bind FactoryBind[T],
 ) *DropDown[T] {
 	d := &DropDown[T]{
 		Items:   items,

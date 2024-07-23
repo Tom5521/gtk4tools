@@ -2,17 +2,18 @@ package widgets
 
 import (
 	"github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/diamondburned/gotk4/pkg/core/gioutil"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
 type (
-	AlternativeListBind ListBind[int]
+	AlternativeListBind FactoryBind[int]
 	AlternativeListLen  func() int
 )
 
 type AlternativeList struct {
-	*List[int]
+	*gtk.ListView
+
+	*ModelFactory[int, *gtk.ListView]
 
 	Len AlternativeListLen
 }
@@ -27,14 +28,18 @@ func NewAlternativeList(
 	bind AlternativeListBind,
 ) *AlternativeList {
 	l := &AlternativeList{
-		List: &List[int]{
-			Model:         gioutil.NewListModel[int](),
-			Factory:       gtk.NewSignalListItemFactory(),
-			SelectionMode: smodel,
-			Setup:         setup,
-			Bind:          ListBind[int](bind),
-		},
 		Len: lenfunc,
+		ModelFactory: &ModelFactory[int, *gtk.ListView]{
+			Setup: setup,
+			Bind: func(li gtools.ListItem, t int) {
+				bind(li, t)
+			},
+			SelectionMode: smodel,
+			Setter:        gtk.NewListView(nil, nil),
+
+			ItemFactory: gtk.NewSignalListItemFactory(),
+			Model:       NewModel[int](),
+		},
 	}
 
 	l.reConnectFactory()
@@ -42,7 +47,9 @@ func NewAlternativeList(
 	l.makeSelectionModeller(smodel)
 	l.reConnectSelection()
 
-	l.ListView = gtk.NewListView(l.SelectionModeller, &l.Factory.ListItemFactory)
+	l.InitSetter()
+
+	l.ListView = l.Setter
 
 	return l
 }
@@ -66,19 +73,19 @@ func (l *AlternativeList) Refresh() {
 }
 
 func (l *AlternativeList) RefreshModel() {
-	l.Model.Splice(0, l.Model.Len(), make([]int, l.Len())...)
+	l.ListModel.Splice(0, l.ListModel.Len(), make([]int, l.Len())...)
 }
 
 // PRIVATE METHODS
 
 func (l *AlternativeList) reConnectFactory() {
-	l.Factory.ConnectSetup(gtools.NewFactorySetup(func(listitem gtools.ListItem) {
+	l.ItemFactory.ConnectSetup(gtools.NewFactorySetup(func(listitem gtools.ListItem) {
 		if l.Setup == nil {
 			return
 		}
 		l.Setup(listitem)
 	}))
-	l.Factory.ConnectBind(gtools.NewFactoryBind(func(listitem gtools.ListItem, pos int) {
+	l.ItemFactory.ConnectBind(gtools.NewFactoryBind(func(listitem gtools.ListItem, pos int) {
 		l.Bind(listitem, pos)
 	}))
 }

@@ -17,7 +17,7 @@ func NewStringList(
 	items []string,
 	smodel ListSelectionMode,
 	setup FactorySetup,
-	bind ListBind[string],
+	bind FactoryBind[string],
 ) *StringList {
 	return &StringList{
 		List: NewList(

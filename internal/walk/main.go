@@ -2,9 +2,9 @@ package walk
 
 import "reflect"
 
-type Iteration func(reflect.Value, reflect.StructField) bool
+type Iter func(reflect.Value, reflect.StructField) bool
 
-func Into(t any, action Iteration) {
+func Into(t any, action Iter) {
 	value := reflect.ValueOf(t)
 	if v := value.Kind(); v == reflect.Pointer || v == reflect.Interface {
 		value = value.Elem()
@@ -20,7 +20,7 @@ func Into(t any, action Iteration) {
 func Struct(
 	value reflect.Value,
 	str reflect.Type,
-	action Iteration,
+	action Iter,
 ) {
 	for i := range str.NumField() {
 		v := value.Field(i)
