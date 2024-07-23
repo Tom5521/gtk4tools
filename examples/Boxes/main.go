@@ -7,9 +7,8 @@ import (
 	"time"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
-	"github.com/Tom5521/gtk4tools/pkg/gtools"
-	t "github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/Tom5521/gtk4tools/pkg/widget"
+	"github.com/Tom5521/gtk4tools/pkg/v2/gtools"
+	"github.com/Tom5521/gtk4tools/pkg/v2/widget"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -51,10 +50,10 @@ func activate(app *gtk.Application) {
 	list := widget.NewList(
 		items,
 		gtools.SelectionMultiple,
-		func(listitem t.ListItem) {
+		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
-		func(listitem t.ListItem, item string) {
+		func(listitem gtools.ListItem, item string) {
 			label := listitem.Child().(*gtk.Label)
 			label.SetText(item)
 		},
@@ -74,7 +73,7 @@ func activate(app *gtk.Application) {
 	vbox := boxes.NewCHbox(1,
 		boxes.NewScrolledVbox(
 			// Convert a slice of a specific type to a gtk.Widgetter slice.
-			t.ToWidgetter(buttons)...,
+			gtools.ToWidgetter(buttons)...,
 		),
 		boxes.NewScrolledVbox(
 			labels...,

@@ -5,7 +5,7 @@ import (
 
 	_ "embed"
 
-	"github.com/Tom5521/gtk4tools/pkg/gtools"
+	"github.com/Tom5521/gtk4tools/pkg/v2/gtools"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
