@@ -45,11 +45,11 @@ func ExampleList_RefreshFactory() {
 		},
 	)
 
-	list.Setup = func(li gtools.ListItem) {
+	list.SetSetup(func(li gtools.ListItem) {
 		li.SetChild(gtk.NewText())
-	}
-	list.Bind = func(li gtools.ListItem, s string) {
+	},
+	)
+	list.SetBind(func(li gtools.ListItem, s string) {
 		li.Child().(*gtk.Text).SetText(s)
-	}
-	list.RefreshFactory()
+	})
 }

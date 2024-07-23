@@ -20,6 +20,17 @@ var (
 	_ ListItem = (*gtk.ColumnViewCell)(nil)
 )
 
+type Factoryer[T any] interface {
+	SetFactory(*gtk.SignalListItemFactory)
+	Factory() *gtk.SignalListItemFactory
+	Modeller() Modeller[T]
+	SetModeller(Modeller[T])
+	Setup() FactorySetup
+	Bind() FactoryBind[T]
+	SetSetup(FactorySetup)
+	SetBind(FactoryBind[T])
+}
+
 type ListItem interface {
 	glib.Objector
 

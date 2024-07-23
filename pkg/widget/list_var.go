@@ -7,7 +7,7 @@ import (
 
 type ListVar[T any] struct {
 	*gtk.ListView
-	*ModelFactory[T, *gtk.ListView]
+	*TemplateView[T, *gtk.ListView]
 }
 
 func NewListVar[T any](
@@ -17,7 +17,7 @@ func NewListVar[T any](
 	bind gtools.FactoryBind[T],
 ) *ListVar[T] {
 	l := &ListVar[T]{
-		ModelFactory: NewModelFactory[T](
+		TemplateView: NewTemplateView[T](
 			smodel,
 			gtk.NewListView(nil, nil),
 			setup,
@@ -29,21 +29,4 @@ func NewListVar[T any](
 	l.ListView = l.Setter
 
 	return l
-}
-
-// Internal functions
-
-func (l *ListVar[T]) reConnectFactory() {
-	l.ItemFactory.ConnectSetup(gtools.NewFactorySetup(func(listitem gtools.ListItem) {
-		if l.Setup == nil {
-			return
-		}
-		l.Setup(listitem)
-	}))
-	l.ItemFactory.ConnectBind(gtools.NewFactoryBind(func(listitem gtools.ListItem, pos int) {
-		if l.Bind == nil {
-			return
-		}
-		l.Bind(listitem, l.At(pos))
-	}))
 }

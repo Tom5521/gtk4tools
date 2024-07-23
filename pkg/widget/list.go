@@ -8,7 +8,7 @@ import (
 type List[T any] struct {
 	*gtk.ListView
 
-	*ModelFactory[T, *gtk.ListView]
+	*TemplateView[T, *gtk.ListView]
 }
 
 func NewList[T any](
@@ -18,7 +18,7 @@ func NewList[T any](
 	bind gtools.FactoryBind[T],
 ) *List[T] {
 	l := &List[T]{}
-	l.ModelFactory = NewModelFactory[T, *gtk.ListView](
+	l.TemplateView = NewTemplateView[T, *gtk.ListView](
 		smodel,
 		gtk.NewListView(nil, nil),
 		setup,
@@ -26,7 +26,7 @@ func NewList[T any](
 		gtools.NewModel(items...),
 	)
 
-	l.ListView = l.ModelFactory.Setter
+	l.ListView = l.TemplateView.Setter
 
 	return l
 }

@@ -39,7 +39,7 @@ func (m *ModelVar[T]) Len() int {
 }
 
 func (m *ModelVar[T]) SetItems(items []T) {
-	*m.items = items
+	m.Splice(0, m.listModel.Len(), items...)
 }
 
 func (m *ModelVar[T]) Remove(i int) {
