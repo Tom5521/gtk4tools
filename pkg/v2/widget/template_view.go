@@ -1,7 +1,7 @@
 package widget
 
 import (
-	"github.com/Tom5521/gtk4tools/pkg/gtools"
+	"github.com/Tom5521/gtk4tools/pkg/v2/gtools"
 )
 
 type TemplateView[T any, M gtools.SetModelFactoryer] struct {

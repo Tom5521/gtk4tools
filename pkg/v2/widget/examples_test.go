@@ -3,8 +3,8 @@ package widget_test
 import (
 	"fmt"
 
-	"github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/Tom5521/gtk4tools/pkg/widget"
+	"github.com/Tom5521/gtk4tools/pkg/v2/gtools"
+	"github.com/Tom5521/gtk4tools/pkg/v2/widget"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
