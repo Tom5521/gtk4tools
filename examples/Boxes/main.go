@@ -60,15 +60,15 @@ func activate(app *gtk.Application) {
 	)
 	list.SetVExpand(true)
 
-	list.OnMultipleSelected = func(indexes []int) {
+	list.ConnectMultipleSelected(func(indexes []int) {
 		for _, i := range indexes {
-			fmt.Printf("|%s|", list.Items[i])
+			fmt.Printf("|%s|", list.At(i))
 		}
 		fmt.Println()
-	}
-	list.OnSelected = func(index int) {
-		fmt.Println(list.Items[index])
-	}
+	})
+	list.ConnectSelected(func(index int) {
+		fmt.Println(list.At(index))
+	})
 
 	vbox := boxes.NewCHbox(1,
 		boxes.NewScrolledVbox(

@@ -8,34 +8,6 @@ import (
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-func ExampleAlternativeList() {
-	items := []string{"1", "2", "3"}
-
-	list := widgets.NewAlternativeList(
-		widgets.SelectionMultiple,
-		func() int {
-			return len(items)
-		},
-		func(listitem gtools.ListItem) {
-			listitem.SetChild(gtk.NewLabel(""))
-		},
-		func(listitem gtools.ListItem, index int) {
-			listitem.Child().(*gtk.Label).SetText(items[index])
-		},
-	)
-
-	list.OnMultipleSelected = func(indexes []int) {
-		for _, i := range indexes {
-			fmt.Printf("|%s|", items[i])
-		}
-		fmt.Println()
-	}
-
-	list.OnSelected = func(index int) {
-		fmt.Println(index)
-	}
-}
-
 func ExampleList() {
 	items := []string{"1", "2", "3"}
 	list := widgets.NewList(
@@ -49,15 +21,15 @@ func ExampleList() {
 		},
 	)
 
-	list.OnMultipleSelected = func(indexes []int) {
+	list.ConnectMultipleSelected(func(indexes []int) {
 		for _, i := range indexes {
-			fmt.Printf("|%s|", list.Items[i])
+			fmt.Printf("|%s|", list.At(i))
 		}
 		fmt.Println()
-	}
-	list.OnSelected = func(index int) {
-		fmt.Println(list.Items[index])
-	}
+	})
+	list.ConnectSelected(func(index int) {
+		fmt.Println(list.At(index))
+	})
 }
 
 func ExampleList_RefreshFactory() {

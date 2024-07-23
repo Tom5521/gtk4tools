@@ -22,7 +22,7 @@ func NewList[T any](
 		gtk.NewListView(nil, nil),
 		setup,
 		bind,
-		items...,
+		NewModel(items...),
 	)
 
 	l.ListView = l.ModelFactory.Setter

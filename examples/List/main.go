@@ -55,11 +55,13 @@ func activate(app *gtk.Application) {
 		},
 	)
 
-	list.OnSelected = func(index int) {
-		fmt.Println("Index: ", index)
-		fmt.Println("Value: ", items[index])
-	}
-	list.OnMultipleSelected = func(indexes []int) {
+	list.ConnectSelected(
+		func(index int) {
+			fmt.Println("Index: ", index)
+			fmt.Println("Value: ", items[index])
+		},
+	)
+	list.ConnectMultipleSelected(func(indexes []int) {
 		fmt.Println("Indexes: ", indexes)
 		fmt.Print("Values: ")
 		var values []Person
@@ -71,18 +73,19 @@ func activate(app *gtk.Application) {
 			}
 		}
 		fmt.Println(values)
-	}
+	},
+	)
 
 	list.SetVExpand(true)
 
 	button := widgets.NewButton("Change Selection Model", func() {
-		switch list.SelectionMode {
+		switch list.SelectionMode() {
 		case widgets.SelectionNone:
-			list.SetSelectionModeller(widgets.SelectionSingle)
+			list.SetSelectionMode(widgets.SelectionSingle)
 		case widgets.SelectionSingle:
-			list.SetSelectionModeller(widgets.SelectionMultiple)
+			list.SetSelectionMode(widgets.SelectionMultiple)
 		case widgets.SelectionMultiple:
-			list.SetSelectionModeller(widgets.SelectionNone)
+			list.SetSelectionMode(widgets.SelectionNone)
 		}
 	})
 

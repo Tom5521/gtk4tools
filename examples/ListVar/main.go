@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"os"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
@@ -55,13 +56,11 @@ func activate(app *gtk.Application) {
 		},
 	)
 
-	list.OnSelected = func(index int) {
+	list.ConnectSelected(func(index int) {
 		fmt.Println("Index: ", index)
 		fmt.Println("Value: ", items[index])
-
-		fmt.Println(list.Items)
-	}
-	list.OnMultipleSelected = func(indexes []int) {
+	})
+	list.ConnectMultipleSelected(func(indexes []int) {
 		fmt.Println("Indexes: ", indexes)
 		fmt.Print("Values: ")
 		var values []Person
@@ -73,29 +72,48 @@ func activate(app *gtk.Application) {
 			}
 		}
 		fmt.Println(values)
-	}
+	})
 
 	list.SetVExpand(true)
 
-	button := widgets.NewButton("Change Selection Model", func() {
-		switch list.SelectionMode {
+	button1 := widgets.NewButton("Change Selection Model", func() {
+		switch list.SelectionMode() {
 		case widgets.SelectionNone:
-			list.SetSelectionModeller(widgets.SelectionSingle)
+			list.SetSelectionMode(widgets.SelectionSingle)
 		case widgets.SelectionSingle:
-			list.SetSelectionModeller(widgets.SelectionMultiple)
+			list.SetSelectionMode(widgets.SelectionMultiple)
 		case widgets.SelectionMultiple:
-			list.SetSelectionModeller(widgets.SelectionNone)
+			list.SetSelectionMode(widgets.SelectionNone)
 		}
 	})
 
-	list.Append(Person{
-		"Meow",
-		12,
+	entry := gtk.NewEntry()
+	button2 := widgets.NewButton("Append item", func() {
+		if entry.Text() == "" {
+			return
+		}
+		list.Append(Person{
+			Name: entry.Text(),
+			Age:  uint(rand.IntN(100)),
+		})
+		entry.SetText("")
 	})
+
+	entryBox := boxes.NewHbox(
+		button2,
+		entry,
+	)
+	entryBox.SetHomogeneous(true)
+
+	buttonsBox := boxes.NewHbox(
+		button1,
+		entryBox,
+	)
+	buttonsBox.SetHomogeneous(true)
 
 	w.SetChild(boxes.NewVbox(
 		list,
-		button,
+		buttonsBox,
 	))
 	w.Present()
 }
