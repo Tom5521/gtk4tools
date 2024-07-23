@@ -1,4 +1,4 @@
-package widgets
+package widget
 
 import (
 	"github.com/Tom5521/gtk4tools/pkg/gtools"
@@ -12,17 +12,17 @@ type ListVar[T any] struct {
 
 func NewListVar[T any](
 	items *[]T,
-	smodel ListSelectionMode,
-	setup FactorySetup,
-	bind FactoryBind[T],
+	smodel gtools.ListSelectionMode,
+	setup gtools.FactorySetup,
+	bind gtools.FactoryBind[T],
 ) *ListVar[T] {
 	l := &ListVar[T]{
-		ModelFactory: NewModelFactory(
+		ModelFactory: NewModelFactory[T](
 			smodel,
 			gtk.NewListView(nil, nil),
 			setup,
 			bind,
-			NewModelVar(items),
+			gtools.NewModelVar(items),
 		),
 	}
 

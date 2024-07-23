@@ -7,8 +7,9 @@ import (
 	"time"
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
+	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	t "github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/Tom5521/gtk4tools/pkg/widgets"
+	"github.com/Tom5521/gtk4tools/pkg/widget"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -29,7 +30,7 @@ func activate(app *gtk.Application) {
 
 	var buttons []*gtk.Button
 	for i := range 30 {
-		button := widgets.NewButton("Button "+strconv.Itoa(i), func() {
+		button := widget.NewButton("Button "+strconv.Itoa(i), func() {
 			fmt.Println(i)
 		})
 		buttons = append(buttons, button)
@@ -47,9 +48,9 @@ func activate(app *gtk.Application) {
 		}
 		return out
 	}()
-	list := widgets.NewList(
+	list := widget.NewList(
 		items,
-		widgets.SelectionMultiple,
+		gtools.SelectionMultiple,
 		func(listitem t.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},

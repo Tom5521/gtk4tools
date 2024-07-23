@@ -1,6 +1,6 @@
 //go:build dev
 
-package widgets
+package widget
 
 import (
 	"slices"

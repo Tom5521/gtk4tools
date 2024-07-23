@@ -1,4 +1,4 @@
-package widgets
+package widget
 
 func splice[T any](slice []T, start, count int, items []T) []T {
 	newLength := len(slice) - count + len(items)

@@ -1,4 +1,6 @@
-package widgets
+package widget
+
+import "github.com/Tom5521/gtk4tools/pkg/gtools"
 
 // Deprecated: Replace it with CustomList[string].
 // Since version 1.6.1 this struct is renamed from List to StringList.
@@ -15,9 +17,9 @@ type StringList struct {
 // so it should not be a problem.
 func NewStringList(
 	items []string,
-	smodel ListSelectionMode,
-	setup FactorySetup,
-	bind FactoryBind[string],
+	smodel gtools.ListSelectionMode,
+	setup gtools.FactorySetup,
+	bind gtools.FactoryBind[string],
 ) *StringList {
 	return &StringList{
 		List: NewList(

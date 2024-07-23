@@ -1,28 +1,28 @@
-package widgets
+package widget
 
 import (
 	"github.com/Tom5521/gtk4tools/pkg/gtools"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
-type ModelFactory[T any, M SetModelFactoryer] struct {
-	Modeller[T]
-	Selectioner
+type ModelFactory[T any, M gtools.SetModelFactoryer] struct {
+	gtools.Modeller[T]
+	gtools.Selectioner
 
-	Setup FactorySetup
-	Bind  FactoryBind[T]
+	Setup gtools.FactorySetup
+	Bind  gtools.FactoryBind[T]
 
 	ItemFactory *gtk.SignalListItemFactory
 
 	Setter M
 }
 
-func NewModelFactory[T any, M SetModelFactoryer](
-	smodel ListSelectionMode,
+func NewModelFactory[T any, M gtools.SetModelFactoryer](
+	smodel gtools.ListSelectionMode,
 	sm M,
-	setup FactorySetup,
-	bind FactoryBind[T],
-	modeller Modeller[T],
+	setup gtools.FactorySetup,
+	bind gtools.FactoryBind[T],
+	modeller gtools.Modeller[T],
 ) *ModelFactory[T, M] {
 	m := &ModelFactory[T, M]{
 		Setup:    setup,
@@ -34,7 +34,7 @@ func NewModelFactory[T any, M SetModelFactoryer](
 		ItemFactory: gtk.NewSignalListItemFactory(),
 	}
 
-	m.Selectioner = NewSelection(smodel, m.Modeller.ListModel())
+	m.Selectioner = gtools.NewSelection(smodel, m.Modeller.ListModel())
 	m.reConnectFactory()
 
 	m.InitSetter()
@@ -46,7 +46,7 @@ func (m *ModelFactory[T, M]) InitSetter() {
 	m.Setter.SetFactory(&m.ItemFactory.ListItemFactory)
 }
 
-func (m *ModelFactory[T, _]) SetSelectionMode(mode ListSelectionMode) {
+func (m *ModelFactory[T, _]) SetSelectionMode(mode gtools.ListSelectionMode) {
 	m.Selectioner.SetSelectionMode(mode)
 	m.Setter.SetModel(m.SelectionModeller())
 }

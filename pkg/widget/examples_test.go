@@ -1,18 +1,18 @@
-package widgets_test
+package widget_test
 
 import (
 	"fmt"
 
 	"github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/Tom5521/gtk4tools/pkg/widgets"
+	"github.com/Tom5521/gtk4tools/pkg/widget"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
 
 func ExampleList() {
 	items := []string{"1", "2", "3"}
-	list := widgets.NewList(
+	list := widget.NewList(
 		items,
-		widgets.SelectionMultiple,
+		gtools.SelectionMultiple,
 		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},
@@ -34,9 +34,9 @@ func ExampleList() {
 
 func ExampleList_RefreshFactory() {
 	items := []string{"1", "2", "3"}
-	list := widgets.NewList(
+	list := widget.NewList(
 		items,
-		widgets.SelectionMultiple,
+		gtools.SelectionMultiple,
 		func(listitem gtools.ListItem) {
 			listitem.SetChild(gtk.NewLabel(""))
 		},

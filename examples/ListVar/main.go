@@ -7,7 +7,7 @@ import (
 
 	"github.com/Tom5521/gtk4tools/pkg/boxes"
 	"github.com/Tom5521/gtk4tools/pkg/gtools"
-	"github.com/Tom5521/gtk4tools/pkg/widgets"
+	"github.com/Tom5521/gtk4tools/pkg/widget"
 	"github.com/diamondburned/gotk4/pkg/gio/v2"
 	"github.com/diamondburned/gotk4/pkg/gtk/v4"
 )
@@ -45,9 +45,9 @@ func activate(app *gtk.Application) {
 		},
 	}
 
-	list := widgets.NewListVar[Person](
+	list := widget.NewListVar[Person](
 		&items,
-		widgets.SelectionSingle,
+		gtools.SelectionSingle,
 		func(li gtools.ListItem) {
 			li.SetChild(gtk.NewLabel(""))
 		},
@@ -76,19 +76,19 @@ func activate(app *gtk.Application) {
 
 	list.SetVExpand(true)
 
-	button1 := widgets.NewButton("Change Selection Model", func() {
+	button1 := widget.NewButton("Change Selection Model", func() {
 		switch list.SelectionMode() {
-		case widgets.SelectionNone:
-			list.SetSelectionMode(widgets.SelectionSingle)
-		case widgets.SelectionSingle:
-			list.SetSelectionMode(widgets.SelectionMultiple)
-		case widgets.SelectionMultiple:
-			list.SetSelectionMode(widgets.SelectionNone)
+		case gtools.SelectionNone:
+			list.SetSelectionMode(gtools.SelectionSingle)
+		case gtools.SelectionSingle:
+			list.SetSelectionMode(gtools.SelectionMultiple)
+		case gtools.SelectionMultiple:
+			list.SetSelectionMode(gtools.SelectionNone)
 		}
 	})
 
 	entry := gtk.NewEntry()
-	button2 := widgets.NewButton("Append item", func() {
+	button2 := widget.NewButton("Append item", func() {
 		if entry.Text() == "" {
 			return
 		}
