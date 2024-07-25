@@ -31,7 +31,7 @@ func NewDropDown[T any](
 	)
 
 	d.dropDown = gtk.NewDropDown(d.Model.ListModel(), nil)
-	d.dropDown.SetFactory(&d.Factoryer.Factory().ListItemFactory)
+	d.dropDown.SetFactory(&d.Factoryer.SignalListItemFactory().ListItemFactory)
 	d.dropDown.ConnectAfter("notify::selected", func() {
 		if d.OnSelected != nil {
 			d.OnSelected(d.At(int(d.dropDown.Selected())))

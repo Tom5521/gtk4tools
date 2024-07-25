@@ -40,7 +40,7 @@ func NewTemplateView[T any, M gtools.SetModelFactoryer](
 
 func (m *TemplateView[T, M]) InitSetter() {
 	m.Setter.SetModel(m.SelectionModeller())
-	m.Setter.SetFactory(&m.Factoryer.Factory().ListItemFactory)
+	m.Setter.SetFactory(&m.Factoryer.SignalListItemFactory().ListItemFactory)
 }
 
 func (m *TemplateView[T, _]) SetSelectionMode(mode gtools.ListSelectionMode) {

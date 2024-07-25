@@ -31,12 +31,12 @@ func NewFactory[T any](
 	return f
 }
 
-func (f *Factory[T]) SetFactory(fac *gtk.SignalListItemFactory) {
+func (f *Factory[T]) SetSignalListItemFactory(fac *gtk.SignalListItemFactory) {
 	f.factory = fac
 	f.reconnectFactory()
 }
 
-func (f *Factory[T]) Factory() *gtk.SignalListItemFactory {
+func (f *Factory[T]) SignalListItemFactory() *gtk.SignalListItemFactory {
 	return f.factory
 }
 

@@ -21,14 +21,17 @@ var (
 )
 
 type Factoryer[T any] interface {
-	SetFactory(*gtk.SignalListItemFactory)
-	Factory() *gtk.SignalListItemFactory
+	SetSignalListItemFactory(*gtk.SignalListItemFactory)
+	SignalListItemFactory() *gtk.SignalListItemFactory
+
 	Modeller() Modeller[T]
 	SetModeller(Modeller[T])
-	Setup() FactorySetup
-	Bind() FactoryBind[T]
+
 	SetSetup(FactorySetup)
+	Setup() FactorySetup
+
 	SetBind(FactoryBind[T])
+	Bind() FactoryBind[T]
 }
 
 type ListItem interface {
@@ -73,24 +76,26 @@ type Selectioner interface {
 	CanUnselect() bool
 	SetCanUnselect(bool)
 
-	SetSelectionModeller(gtk.SelectionModeller)
 	SelectionModeller() gtk.SelectionModeller
+	SetSelectionModeller(gtk.SelectionModeller)
 
-	SetSelectionMode(ListSelectionMode)
 	SelectionMode() ListSelectionMode
+	SetSelectionMode(ListSelectionMode)
 
 	ConnectSelected(func(int))
 	ConnectMultipleSelected(func([]int))
 
 	SelectRange(int, int, bool)
 	SelectAll()
+	Select(int)
+	SelectMultiple(...int)
+
 	UnselectAll()
 	UnselectRange(int, int)
 	Unselect(int)
+
 	Selected() int
-	Select(int)
 	MultipleSelected() []int
-	SelectMultiple(...int)
 }
 
 type Modeller[T any] interface {
