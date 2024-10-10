@@ -221,16 +221,16 @@ func (s *Selection) SelectionMode() ListSelectionMode {
 	return s.selectionMode
 }
 
-func (m *Selection) reConnectSelection() {
-	m.selectionModeller.ConnectSelectionChanged(func(_, _ uint) {
-		switch m.selectionModeller.(type) {
+func (s *Selection) reConnectSelection() {
+	s.selectionModeller.ConnectSelectionChanged(func(_, _ uint) {
+		switch s.selectionModeller.(type) {
 		case *gtk.SingleSelection:
-			if m.onSelected != nil {
-				m.onSelected(m.Selected())
+			if s.onSelected != nil {
+				s.onSelected(s.Selected())
 			}
 		case *gtk.MultiSelection:
-			if m.onMultipleSelected != nil {
-				m.onMultipleSelected(m.MultipleSelected())
+			if s.onMultipleSelected != nil {
+				s.onMultipleSelected(s.MultipleSelected())
 			}
 		}
 	})
