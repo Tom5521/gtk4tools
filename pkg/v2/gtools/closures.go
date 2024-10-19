@@ -12,7 +12,10 @@ func NewFactorySetup(f func(listitem ListItem)) func(*glib.Object) {
 
 func NewFactoryBind(f func(listitem ListItem, pos int)) func(*glib.Object) {
 	return func(obj *glib.Object) {
-		i := obj.Cast().(ListItem)
+		i, ok := obj.Cast().(ListItem)
+		if !ok {
+			panic("Invalid interface conversion! glib.Objector -> ListItem")
+		}
 		f(i, int(i.Position()))
 	}
 }
